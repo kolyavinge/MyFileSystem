@@ -6,7 +6,7 @@ namespace MyFileSystem.Data.Repository
 {
     public interface IDataFileRepository
     {
-        void CreateDataFile(ushort dataFileNumber);
+        void CreateDataFileIfNotExist(ushort dataFileNumber);
         void OpenDataFile(ushort dataFileNumber);
         void CloseCurrentDataFile();
         void CreateRecord(string recordName);
@@ -23,9 +23,13 @@ namespace MyFileSystem.Data.Repository
             _dataDirectoryPath = dataDirectoryPath;
         }
 
-        public void CreateDataFile(ushort dataFileNumber)
+        public void CreateDataFileIfNotExist(ushort dataFileNumber)
         {
-            StorageFile.Create(Path.Combine(_dataDirectoryPath, dataFileNumber.ToString()));
+            var path = Path.Combine(_dataDirectoryPath, dataFileNumber.ToString());
+            if (!File.Exists(path))
+            {
+                StorageFile.Create(path);
+            }
         }
 
         public void OpenDataFile(ushort dataFileNumber)

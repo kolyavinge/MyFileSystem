@@ -65,7 +65,7 @@ namespace MyFileSystem.Logic
             var fileBuffer = new byte[10 * 1024 * 1024];
             foreach (var groupedDataRecords in dataRecords.GroupBy(x => x.DataFileNumber))
             {
-                _dataFileRepository.CreateDataFile(groupedDataRecords.Key);
+                _dataFileRepository.CreateDataFileIfNotExist(groupedDataRecords.Key);
                 _dataFileRepository.OpenDataFile(groupedDataRecords.Key);
                 foreach (var dataRecord in groupedDataRecords)
                 {
