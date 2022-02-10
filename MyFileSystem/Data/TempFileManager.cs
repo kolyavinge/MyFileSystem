@@ -16,9 +16,16 @@ namespace MyFileSystem.Data
 
         public TempFileManager(string dataDirectoryPath)
         {
-            _tempDirectoryPath = Path.Combine(dataDirectoryPath, "tmp");
-            if (!Directory.Exists(_tempDirectoryPath)) Directory.CreateDirectory(_tempDirectoryPath);
             _tempFiles = new List<string>();
+            _tempDirectoryPath = Path.Combine(dataDirectoryPath, "tmp");
+            if (!Directory.Exists(_tempDirectoryPath))
+            {
+                Directory.CreateDirectory(_tempDirectoryPath);
+            }
+            else
+            {
+                foreach (var file in Directory.GetFiles(_tempDirectoryPath)) File.Delete(file);
+            }
         }
 
         public void Dispose()

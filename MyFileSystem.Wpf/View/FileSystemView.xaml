@@ -3,18 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:MyFileSystem.Wpf.Controls" xmlns:view="clr-namespace:MyFileSystem.Wpf.View"
+             xmlns:controls="clr-namespace:MyFileSystem.Wpf.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
     <Grid>
         <controls:TreeViewExt ItemsSource="{Binding Root}" SelectedItemBindable="{Binding SelectedFileSystemItem, Mode=TwoWay}">
             <!--ContextMenu-->
             <TreeView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Открыть файл" Command="{Binding OpenFileCommand}" />
-                    <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" />
+                    <MenuItem Header="Открыть файл" Command="{Binding OpenFileCommand}" IsEnabled="{Binding OpenFileCommandEnabled}" />
+                    <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" IsEnabled="{Binding AddFilesCommandEnabled}" />
                 </ContextMenu>
             </TreeView.ContextMenu>
+            <!--ItemContainerStyle-->
+            <controls:TreeViewExt.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                </Style>
+            </controls:TreeViewExt.ItemContainerStyle>
             <!--ItemTemplate-->
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">

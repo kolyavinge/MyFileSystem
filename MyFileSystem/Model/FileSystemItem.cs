@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using MyFileSystem.Data;
 using MyFileSystem.Data.Repository;
@@ -13,7 +14,9 @@ namespace MyFileSystem.Model
 
         internal uint Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; internal set; }
+
+        public string Extension => Path.GetExtension(Name);
 
         public FileSystemItemKind Kind { get; set; }
 

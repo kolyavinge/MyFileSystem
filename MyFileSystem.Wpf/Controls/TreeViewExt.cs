@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace MyFileSystem.Wpf.Controls
@@ -14,14 +15,10 @@ namespace MyFileSystem.Wpf.Controls
         public static readonly DependencyProperty SelectedItemBindableProperty =
             DependencyProperty.Register("SelectedItemBindable", typeof(object), typeof(TreeViewExt));
 
-        public TreeViewExt()
-        {
-            SelectedItemChanged += OnSelectedItemChanged;
-        }
-
-        private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        protected override void OnSelectedItemChanged(RoutedPropertyChangedEventArgs<object> e)
         {
             SelectedItemBindable = e.NewValue;
+            base.OnSelectedItemChanged(e);
         }
     }
 }

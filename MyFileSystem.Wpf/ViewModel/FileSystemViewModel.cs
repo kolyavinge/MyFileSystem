@@ -10,21 +10,32 @@ namespace MyFileSystem.Wpf.ViewModel
     public class FileSystemViewModel : NotificationObject
     {
         private readonly IFileSystem _fileSystem;
+        private FileSystemItemViewModel _selectedFileSystemItem;
 
-        public IEnumerable<FileSystemItemViewModel> Root { get; }
+        public IEnumerable<FileSystemItemViewModel> Root => new[] { new FileSystemItemViewModel(_fileSystem.Root) { IsExpanded = true } };
 
-        public FileSystemItemViewModel SelectedFileSystemItem { get; set; }
+        public FileSystemItemViewModel SelectedFileSystemItem
+        {
+            get => _selectedFileSystemItem;
+            set
+            {
+                _selectedFileSystemItem = value;
+                RaisePropertyChanged(() => OpenFileCommandEnabled);
+                RaisePropertyChanged(() => AddFilesCommandEnabled);
+            }
+        }
 
-        public ICommand OpenFileCommand { get; }
+        public ICommand OpenFileCommand => new ActionCommand(OpenFile);
 
-        public ICommand AddFilesCommand { get; }
+        public ICommand AddFilesCommand => new ActionCommand(AddFiles);
+
+        public bool OpenFileCommandEnabled => SelectedFileSystemItem?.Kind == Data.FileSystemItemKind.File;
+
+        public bool AddFilesCommandEnabled => SelectedFileSystemItem?.Kind == Data.FileSystemItemKind.Directory;
 
         public FileSystemViewModel(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
-            Root = new[] { new FileSystemItemViewModel(_fileSystem.Root) };
-            OpenFileCommand = new ActionCommand(OpenFile);
-            AddFilesCommand = new ActionCommand(AddFiles);
         }
 
         private void AddFiles()
