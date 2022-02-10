@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Images\directory.png" />
     <None Remove="Images\file.png" />
+    <None Remove="Images\image.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
   <ItemGroup>
     <Resource Include="Images\directory.png" />
     <Resource Include="Images\file.png" />
+    <Resource Include="Images\image.png" />
   </ItemGroup>
 
 </Project>

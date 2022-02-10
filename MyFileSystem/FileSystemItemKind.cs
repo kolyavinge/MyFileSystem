@@ -1,4 +1,4 @@
-﻿namespace MyFileSystem.Data
+﻿namespace MyFileSystem
 {
     public enum FileSystemItemKind : byte
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using MyFileSystem.Data;
 using MyFileSystem.Data.Repository;
 using MyFileSystem.Model.Utils;
+using MyFileSystem.Utils;
 
 namespace MyFileSystem.Model
 {
@@ -12,13 +13,15 @@ namespace MyFileSystem.Model
         private readonly IFileSystemRepository _fileSystemRepository;
         private IEnumerable<FileSystemItem> _children;
 
-        internal uint Id { get; set; }
+        internal uint Id { get; private set; }
 
-        public string Name { get; internal set; }
+        public string Name { get; private set; }
 
         public string Extension => Path.GetExtension(Name);
 
-        public FileSystemItemKind Kind { get; set; }
+        public FileSystemItemKind Kind { get; private set; }
+
+        public FileKind FileKind { get; private set; }
 
         public IEnumerable<FileSystemItem> Children
         {
@@ -33,9 +36,17 @@ namespace MyFileSystem.Model
             }
         }
 
-        public FileSystemItem(IFileSystemRepository fileSystemRepository)
+        public FileSystemItem(
+            IFileSystemRepository fileSystemRepository,
+            uint id,
+            FileSystemItemKind kind,
+            string name)
         {
             _fileSystemRepository = fileSystemRepository;
+            Id = id;
+            Kind = kind;
+            Name = name;
+            FileKind = ImageFileFormats.Extensions.Contains(Path.GetExtension(Name)) ? FileKind.Image : FileKind.Other;
         }
 
         internal void AddChildren(IEnumerable<FileSystemItem> items)

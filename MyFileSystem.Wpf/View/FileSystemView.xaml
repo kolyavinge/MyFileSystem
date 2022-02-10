@@ -28,6 +28,9 @@
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <StackPanel Orientation="Horizontal">
+                        <StackPanel.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                        </StackPanel.InputBindings>
                         <Image Width="21" Height="21">
                             <Image.Style>
                                 <Style TargetType="Image">
@@ -35,14 +38,26 @@
                                         <DataTrigger Binding="{Binding Kind}" Value="0">
                                             <Setter Property="Source" Value="\Images\directory.png" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding Kind}" Value="1">
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Kind}" Value="1" />
+                                                <Condition Binding="{Binding FileKind}" Value="0" />
+                                            </MultiDataTrigger.Conditions>
                                             <Setter Property="Source" Value="\Images\file.png" />
-                                        </DataTrigger>
+                                        </MultiDataTrigger>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Kind}" Value="1" />
+                                                <Condition Binding="{Binding FileKind}" Value="1" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Source" Value="\Images\image.png" />
+                                        </MultiDataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Image.Style>
                         </Image>
-                        <TextBlock Text="{Binding Name}" Height="21" Margin="4,4,0,0" />
+                        <TextBlock Text="{Binding Name}" Height="21" Margin="4,4,0,0">
+                        </TextBlock>
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>

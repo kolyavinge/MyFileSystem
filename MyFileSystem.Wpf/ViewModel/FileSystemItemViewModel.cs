@@ -19,6 +19,8 @@ namespace MyFileSystem.Wpf.ViewModel
 
         public FileSystemItemKind Kind => InnerObject.Kind;
 
+        public FileKind FileKind => InnerObject.FileKind;
+
         public IEnumerable<FileSystemItemViewModel> Children =>
             InnerObject.Children?.Select(x => new FileSystemItemViewModel(x)).OrderBy(x => x, DefaultComparer.Instance).ToList();
 

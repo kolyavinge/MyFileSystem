@@ -34,7 +34,7 @@ namespace MyFileSystem.Model
             _tempFileManager = tempFileManager;
             _getFileLogic = getFileLogic;
             _addFilesLogic = addFilesLogic;
-            Root = new FileSystemItem(_fileSystemRepository) { Id = 0, Name = "Корневая папка", Kind = FileSystemItemKind.Directory };
+            Root = new FileSystemItem(_fileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка");
         }
 
         public void OpenFile(FileSystemItem file)

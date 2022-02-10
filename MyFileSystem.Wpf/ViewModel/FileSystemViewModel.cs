@@ -29,9 +29,9 @@ namespace MyFileSystem.Wpf.ViewModel
 
         public ICommand AddFilesCommand => new ActionCommand(AddFiles);
 
-        public bool OpenFileCommandEnabled => SelectedFileSystemItem?.Kind == Data.FileSystemItemKind.File;
+        public bool OpenFileCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.File;
 
-        public bool AddFilesCommandEnabled => SelectedFileSystemItem?.Kind == Data.FileSystemItemKind.Directory;
+        public bool AddFilesCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory;
 
         public FileSystemViewModel(IFileSystem fileSystem)
         {
@@ -50,6 +50,7 @@ namespace MyFileSystem.Wpf.ViewModel
 
         private void OpenFile()
         {
+            if (SelectedFileSystemItem?.Kind != FileSystemItemKind.File) return;
             _fileSystem.OpenFile(SelectedFileSystemItem.InnerObject);
         }
     }
