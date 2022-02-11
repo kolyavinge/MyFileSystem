@@ -6,13 +6,17 @@ using MyFileSystem.Model;
 
 namespace MyFileSystem.Wpf.ViewModel
 {
-    public class FileSystemItemViewModel : SimpleViewModel<FileSystemItem>
+    public class FileSystemItemViewModel : ItemViewModel<FileSystemItem>
     {
         private bool _isExpanded;
+        private bool _renameModeOff;
+        private bool _renameModeOn;
 
         public FileSystemItemViewModel(FileSystemItem fileSystemItem) : base(fileSystemItem)
         {
             fileSystemItem.PropertyChanged += (s, e) => RaisePropertyChanged(e.PropertyName);
+            RenameModeOn = false;
+            RenameModeOff = true;
         }
 
         public string Name => InnerObject.Name;
@@ -28,6 +32,26 @@ namespace MyFileSystem.Wpf.ViewModel
         {
             get => _isExpanded;
             set { _isExpanded = value; RaisePropertyChanged(() => IsExpanded); }
+        }
+
+        public bool RenameModeOn
+        {
+            get => _renameModeOn;
+            set
+            {
+                _renameModeOn = value;
+                RaisePropertyChanged(() => RenameModeOn);
+            }
+        }
+
+        public bool RenameModeOff
+        {
+            get => _renameModeOff;
+            set
+            {
+                _renameModeOff = value;
+                RaisePropertyChanged(() => RenameModeOff);
+            }
         }
 
         class DefaultComparer : IComparer<FileSystemItemViewModel>

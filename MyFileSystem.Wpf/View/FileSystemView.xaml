@@ -11,6 +11,11 @@
     </UserControl.Resources>
     <Grid>
         <controls:TreeViewExt ItemsSource="{Binding Root}" SelectedItemBindable="{Binding SelectedFileSystemItem, Mode=TwoWay}">
+            <controls:TreeViewExt.InputBindings>
+                <KeyBinding Key="F2" Command="{Binding StartRenameCommand}" />
+                <KeyBinding Key="Return" Command="{Binding ApplyRenameCommand}" />
+                <KeyBinding Key="Esc" Command="{Binding UndoRenameCommand}" />
+            </controls:TreeViewExt.InputBindings>
             <!--ContextMenu-->
             <TreeView.ContextMenu>
                 <ContextMenu>
@@ -21,13 +26,13 @@
             <!--ItemContainerStyle-->
             <controls:TreeViewExt.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 </Style>
             </controls:TreeViewExt.ItemContainerStyle>
             <!--ItemTemplate-->
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" Height="25">
                         <StackPanel.InputBindings>
                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
                         </StackPanel.InputBindings>
@@ -56,8 +61,13 @@
                                 </Style>
                             </Image.Style>
                         </Image>
-                        <TextBlock Text="{Binding Name}" Height="21" Margin="4,4,0,0">
-                        </TextBlock>
+                        <TextBlock Text="{Binding Name}"
+                                   Visibility="{Binding RenameModeOff, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Margin="4,4,0,0"
+                                   Height="21" />
+                        <TextBox Text="{Binding DataContext.NewItemName, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                 Visibility="{Binding RenameModeOn, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                 Height="21" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>

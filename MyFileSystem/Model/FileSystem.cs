@@ -13,6 +13,7 @@ namespace MyFileSystem.Model
         FileSystemItem Root { get; }
         void OpenFile(FileSystemItem file);
         void AddFiles(FileSystemItem parent, IEnumerable<string> filePathes);
+        void Rename(FileSystemItem item, string newName);
     }
 
     public class FileSystem : IFileSystem
@@ -52,6 +53,12 @@ namespace MyFileSystem.Model
         {
             var result = _addFilesLogic.AddFiles(parent.Id, filePathes);
             parent.AddChildren(result.FileSystemItems.Select(x => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, x)));
+        }
+
+        public void Rename(FileSystemItem item, string newName)
+        {
+            _fileSystemRepository.Rename(item.Id, newName);
+            item.Name = newName;
         }
     }
 }

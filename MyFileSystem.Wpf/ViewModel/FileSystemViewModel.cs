@@ -10,24 +10,43 @@ namespace MyFileSystem.Wpf.ViewModel
     public class FileSystemViewModel : NotificationObject
     {
         private readonly IFileSystem _fileSystem;
+        private readonly FileSystemItemViewModel _rootItem;
         private FileSystemItemViewModel _selectedFileSystemItem;
+        private string _newItemName;
 
-        public IEnumerable<FileSystemItemViewModel> Root => new[] { new FileSystemItemViewModel(_fileSystem.Root) { IsExpanded = true } };
+        public IEnumerable<FileSystemItemViewModel> Root => new[] { _rootItem };
 
         public FileSystemItemViewModel SelectedFileSystemItem
         {
             get => _selectedFileSystemItem;
             set
             {
+                OffRenameMode();
                 _selectedFileSystemItem = value;
                 RaisePropertyChanged(() => OpenFileCommandEnabled);
                 RaisePropertyChanged(() => AddFilesCommandEnabled);
             }
         }
 
+        public string NewItemName
+        {
+            get => _newItemName;
+            set
+            {
+                _newItemName = value;
+                RaisePropertyChanged(() => NewItemName);
+            }
+        }
+
         public ICommand OpenFileCommand => new ActionCommand(OpenFile);
 
         public ICommand AddFilesCommand => new ActionCommand(AddFiles);
+
+        public ICommand StartRenameCommand => new ActionCommand(StartRename);
+
+        public ICommand ApplyRenameCommand => new ActionCommand(ApplyRename);
+
+        public ICommand UndoRenameCommand => new ActionCommand(UndoRename);
 
         public bool OpenFileCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.File;
 
@@ -36,6 +55,8 @@ namespace MyFileSystem.Wpf.ViewModel
         public FileSystemViewModel(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
+            _rootItem = new FileSystemItemViewModel(_fileSystem.Root) { IsExpanded = true };
+            OffRenameMode();
         }
 
         private void AddFiles()
@@ -52,6 +73,41 @@ namespace MyFileSystem.Wpf.ViewModel
         {
             if (SelectedFileSystemItem?.Kind != FileSystemItemKind.File) return;
             _fileSystem.OpenFile(SelectedFileSystemItem.InnerObject);
+        }
+
+        private void StartRename()
+        {
+            if (SelectedFileSystemItem == null) return;
+            NewItemName = SelectedFileSystemItem.Name;
+            OnRenameMode();
+        }
+
+        private void ApplyRename()
+        {
+            if (SelectedFileSystemItem == null) return;
+            OffRenameMode();
+            _fileSystem.Rename(SelectedFileSystemItem.InnerObject, NewItemName);
+        }
+
+        private void UndoRename()
+        {
+            OffRenameMode();
+        }
+
+        private void OnRenameMode()
+        {
+            if (SelectedFileSystemItem == null) return;
+            if (SelectedFileSystemItem == _rootItem) return;
+            SelectedFileSystemItem.RenameModeOn = true;
+            SelectedFileSystemItem.RenameModeOff = false;
+        }
+
+        private void OffRenameMode()
+        {
+            if (SelectedFileSystemItem == null) return;
+            if (SelectedFileSystemItem == _rootItem) return;
+            SelectedFileSystemItem.RenameModeOn = false;
+            SelectedFileSystemItem.RenameModeOff = true;
         }
     }
 }

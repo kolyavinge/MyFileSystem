@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MyFileSystem.Data;
 using MyFileSystem.Data.Repository;
 using MyFileSystem.Model.Utils;
 using MyFileSystem.Utils;
@@ -12,10 +11,19 @@ namespace MyFileSystem.Model
     {
         private readonly IFileSystemRepository _fileSystemRepository;
         private IEnumerable<FileSystemItem> _children;
+        private string _name;
 
         internal uint Id { get; private set; }
 
-        public string Name { get; private set; }
+        public string Name
+        {
+            get => _name;
+            internal set
+            {
+                _name = value;
+                RaisePropertyChanged(() => Name);
+            }
+        }
 
         public string Extension => Path.GetExtension(Name);
 

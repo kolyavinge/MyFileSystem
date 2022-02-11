@@ -14,6 +14,7 @@ namespace MyFileSystem.Data.Repository
         void SaveDataFiles(IEnumerable<DataFilePoco> dataFiles);
         LastItemIdPoco GetLastItemId();
         void SaveLastItemId(LastItemIdPoco item);
+        void Rename(uint itemId, string newName);
     }
 
     internal class FileSystemRepository : IFileSystemRepository
@@ -64,6 +65,13 @@ namespace MyFileSystem.Data.Repository
         public void SaveLastItemId(LastItemIdPoco item)
         {
             _engine.GetCollection<LastItemIdPoco>().Update(item);
+        }
+
+        public void Rename(uint itemId, string newName)
+        {
+            var item = _engine.GetCollection<FileSystemItemPoco>().Get(itemId);
+            item.Name = newName;
+            _engine.GetCollection<FileSystemItemPoco>().Update(item);
         }
     }
 }
