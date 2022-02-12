@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MyFileSystem.Wpf.Controls"
+             xmlns:view="clr-namespace:MyFileSystem.Wpf.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -11,6 +12,7 @@
     </UserControl.Resources>
     <Grid>
         <controls:TreeViewExt ItemsSource="{Binding Root}" SelectedItemBindable="{Binding SelectedFileSystemItem, Mode=TwoWay}">
+            <!--InputBindings-->
             <controls:TreeViewExt.InputBindings>
                 <KeyBinding Key="F2" Command="{Binding StartRenameCommand}" />
                 <KeyBinding Key="Return" Command="{Binding ApplyRenameCommand}" />
@@ -19,11 +21,15 @@
             <!--ContextMenu-->
             <TreeView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Открыть файл" Command="{Binding OpenFileCommand}" IsEnabled="{Binding OpenFileCommandEnabled}" />
+                    <MenuItem Header="Открыть файл" Command="{Binding OpenDirectoryOrFileCommand}" IsEnabled="{Binding OpenFileCommandEnabled}" />
                     <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" IsEnabled="{Binding AddFilesCommandEnabled}" />
                 </ContextMenu>
             </TreeView.ContextMenu>
             <!--ItemContainerStyle-->
+            <controls:TreeViewExt.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#cce8ff" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+            </controls:TreeViewExt.Resources>
             <controls:TreeViewExt.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -34,7 +40,7 @@
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <StackPanel Orientation="Horizontal" Height="25">
                         <StackPanel.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.OpenDirectoryOrFileCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
                         </StackPanel.InputBindings>
                         <Image Width="21" Height="21">
                             <Image.Style>
@@ -62,12 +68,39 @@
                             </Image.Style>
                         </Image>
                         <TextBlock Text="{Binding Name}"
-                                   Visibility="{Binding RenameModeOff, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Visibility="{Binding IsRenameModeOff, Converter={StaticResource BooleanToVisibilityConverter}}"
                                    Margin="4,4,0,0"
                                    Height="21" />
                         <TextBox Text="{Binding DataContext.NewItemName, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                 Visibility="{Binding RenameModeOn, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                 Height="21" />
+                                 Visibility="{Binding IsRenameModeOn, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                 view:FocusExtension.IsFocused="{Binding IsRenameModeOn}"
+                                 view:SelectAllFocusExtension.Enable="{Binding IsRenameModeOn}"
+                                 Margin="1,0,0,0"
+                                 VerticalContentAlignment="Center"
+                                 Height="21">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="BorderBrush" Value="Black"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type TextBox}">
+                                                <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                                    <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter Property="BorderBrush" TargetName="border" Value="Black"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsFocused" Value="true">
+                                                        <Setter Property="BorderBrush" TargetName="border" Value="Black"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>

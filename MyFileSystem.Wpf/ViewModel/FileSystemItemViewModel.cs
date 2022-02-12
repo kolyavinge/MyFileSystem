@@ -15,8 +15,8 @@ namespace MyFileSystem.Wpf.ViewModel
         public FileSystemItemViewModel(FileSystemItem fileSystemItem) : base(fileSystemItem)
         {
             fileSystemItem.PropertyChanged += (s, e) => RaisePropertyChanged(e.PropertyName);
-            RenameModeOn = false;
-            RenameModeOff = true;
+            IsRenameModeOn = false;
+            IsRenameModeOff = true;
         }
 
         public string Name => InnerObject.Name;
@@ -34,24 +34,36 @@ namespace MyFileSystem.Wpf.ViewModel
             set { _isExpanded = value; RaisePropertyChanged(() => IsExpanded); }
         }
 
-        public bool RenameModeOn
+        public bool IsRenameModeOn
         {
             get => _renameModeOn;
-            set
+            private set
             {
                 _renameModeOn = value;
-                RaisePropertyChanged(() => RenameModeOn);
+                RaisePropertyChanged(() => IsRenameModeOn);
             }
         }
 
-        public bool RenameModeOff
+        public bool IsRenameModeOff
         {
             get => _renameModeOff;
-            set
+            private set
             {
                 _renameModeOff = value;
-                RaisePropertyChanged(() => RenameModeOff);
+                RaisePropertyChanged(() => IsRenameModeOff);
             }
+        }
+
+        public void SetRenameModeOn()
+        {
+            IsRenameModeOn = true;
+            IsRenameModeOff = false;
+        }
+
+        public void SetRenameModeOff()
+        {
+            IsRenameModeOn = false;
+            IsRenameModeOff = true;
         }
 
         class DefaultComparer : IComparer<FileSystemItemViewModel>

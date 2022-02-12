@@ -38,7 +38,7 @@ namespace MyFileSystem.Wpf.ViewModel
             }
         }
 
-        public ICommand OpenFileCommand => new ActionCommand(OpenFile);
+        public ICommand OpenDirectoryOrFileCommand => new ActionCommand(OpenDirectoryOrFile);
 
         public ICommand AddFilesCommand => new ActionCommand(AddFiles);
 
@@ -69,10 +69,11 @@ namespace MyFileSystem.Wpf.ViewModel
             }
         }
 
-        private void OpenFile()
+        private void OpenDirectoryOrFile()
         {
-            if (SelectedFileSystemItem?.Kind != FileSystemItemKind.File) return;
-            _fileSystem.OpenFile(SelectedFileSystemItem.InnerObject);
+            if (SelectedFileSystemItem == null) return;
+            if (SelectedFileSystemItem.Kind == FileSystemItemKind.File) _fileSystem.OpenFile(SelectedFileSystemItem.InnerObject);
+            else if (SelectedFileSystemItem.Kind == FileSystemItemKind.Directory) SelectedFileSystemItem.IsExpanded = !SelectedFileSystemItem.IsExpanded;
         }
 
         private void StartRename()
@@ -98,16 +99,14 @@ namespace MyFileSystem.Wpf.ViewModel
         {
             if (SelectedFileSystemItem == null) return;
             if (SelectedFileSystemItem == _rootItem) return;
-            SelectedFileSystemItem.RenameModeOn = true;
-            SelectedFileSystemItem.RenameModeOff = false;
+            SelectedFileSystemItem.SetRenameModeOn();
         }
 
         private void OffRenameMode()
         {
             if (SelectedFileSystemItem == null) return;
             if (SelectedFileSystemItem == _rootItem) return;
-            SelectedFileSystemItem.RenameModeOn = false;
-            SelectedFileSystemItem.RenameModeOff = true;
+            SelectedFileSystemItem.SetRenameModeOff();
         }
     }
 }
