@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 using Microsoft.Win32;
 using MyFileSystem.Model;
@@ -25,6 +26,7 @@ namespace MyFileSystem.Wpf.ViewModel
                 _selectedFileSystemItem = value;
                 RaisePropertyChanged(() => OpenFileCommandEnabled);
                 RaisePropertyChanged(() => AddFilesCommandEnabled);
+                RaisePropertyChanged(() => CreateDirectoryCommandEnabled);
             }
         }
 
@@ -48,9 +50,13 @@ namespace MyFileSystem.Wpf.ViewModel
 
         public ICommand UndoRenameCommand => new ActionCommand(UndoRename);
 
+        public ICommand CreateDirectoryCommand => new ActionCommand(CreateDirectory);
+
         public bool OpenFileCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.File;
 
         public bool AddFilesCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory;
+
+        public bool CreateDirectoryCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory;
 
         public FileSystemViewModel(IFileSystem fileSystem)
         {
@@ -66,6 +72,7 @@ namespace MyFileSystem.Wpf.ViewModel
             if (openFileDialog.ShowDialog() == true)
             {
                 _fileSystem.AddFiles(SelectedFileSystemItem.InnerObject, openFileDialog.FileNames);
+                SelectedFileSystemItem.IsExpanded = true;
             }
         }
 
@@ -79,6 +86,7 @@ namespace MyFileSystem.Wpf.ViewModel
         private void StartRename()
         {
             if (SelectedFileSystemItem == null) return;
+            if (SelectedFileSystemItem == _rootItem) return;
             NewItemName = SelectedFileSystemItem.Name;
             OnRenameMode();
         }
@@ -95,17 +103,25 @@ namespace MyFileSystem.Wpf.ViewModel
             OffRenameMode();
         }
 
+        private void CreateDirectory()
+        {
+            if (SelectedFileSystemItem?.Kind != FileSystemItemKind.Directory) return;
+            var newDirectory = _fileSystem.CreateDirectory(SelectedFileSystemItem.InnerObject);
+            var newDirectoryItemViewModel = SelectedFileSystemItem.Children.First(x => x.InnerObject == newDirectory);
+            SelectedFileSystemItem.IsExpanded = true;
+            SelectedFileSystemItem = newDirectoryItemViewModel;
+            StartRename();
+        }
+
         private void OnRenameMode()
         {
             if (SelectedFileSystemItem == null) return;
-            if (SelectedFileSystemItem == _rootItem) return;
             SelectedFileSystemItem.SetRenameModeOn();
         }
 
         private void OffRenameMode()
         {
             if (SelectedFileSystemItem == null) return;
-            if (SelectedFileSystemItem == _rootItem) return;
             SelectedFileSystemItem.SetRenameModeOff();
         }
     }

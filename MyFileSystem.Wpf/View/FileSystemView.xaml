@@ -23,6 +23,7 @@
                 <ContextMenu>
                     <MenuItem Header="Открыть файл" Command="{Binding OpenDirectoryOrFileCommand}" IsEnabled="{Binding OpenFileCommandEnabled}" />
                     <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" IsEnabled="{Binding AddFilesCommandEnabled}" />
+                    <MenuItem Header="Новая папка" Command="{Binding CreateDirectoryCommand}" IsEnabled="{Binding CreateDirectoryCommandEnabled}" />
                 </ContextMenu>
             </TreeView.ContextMenu>
             <!--ItemContainerStyle-->

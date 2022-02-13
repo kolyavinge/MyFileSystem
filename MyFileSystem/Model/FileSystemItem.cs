@@ -1,17 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MyFileSystem.Data.Repository;
-using MyFileSystem.Model.Utils;
 using MyFileSystem.Utils;
 
 namespace MyFileSystem.Model
 {
-    public class FileSystemItem : NotificationObject
+    public class FileSystemItem
     {
+        public class NameChangeEventEventArgs : EventArgs
+        {
+            public string Name { get; set; }
+        }
+
+        public class AddChildrenEventEventArgs : EventArgs
+        {
+            public IEnumerable<FileSystemItem> NewChildren { get; set; }
+        }
+
         private readonly IFileSystemRepository _fileSystemRepository;
-        private IEnumerable<FileSystemItem> _children;
+        private List<FileSystemItem> _children;
         private string _name;
+
+        public event EventHandler<NameChangeEventEventArgs> NameChangeEvent;
+
+        public event EventHandler<AddChildrenEventEventArgs> AddChildrenEvent;
 
         internal uint Id { get; private set; }
 
@@ -21,7 +35,8 @@ namespace MyFileSystem.Model
             internal set
             {
                 _name = value;
-                RaisePropertyChanged(() => Name);
+                FileKind = ImageFileFormats.Extensions.Contains(Path.GetExtension(_name)) ? FileKind.Image : FileKind.Other;
+                NameChangeEvent?.Invoke(this, new NameChangeEventEventArgs { Name = _name });
             }
         }
 
@@ -35,13 +50,23 @@ namespace MyFileSystem.Model
         {
             get
             {
-                if (Kind == FileSystemItemKind.Directory && _children == null)
-                {
-                    _children = _fileSystemRepository.GetChildren(Id).Select(x => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, x)).ToList();
-                }
-
+                if (!AreChildrenLoaded) LoadChildren();
                 return _children;
             }
+        }
+
+        public bool AreChildrenLoaded
+        {
+            get
+            {
+                if (Kind == FileSystemItemKind.Directory) return _children != null;
+                else return true;
+            }
+        }
+
+        private void LoadChildren()
+        {
+            _children = _fileSystemRepository.GetChildren(Id).Select(x => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, x)).ToList();
         }
 
         public FileSystemItem(
@@ -54,13 +79,13 @@ namespace MyFileSystem.Model
             Id = id;
             Kind = kind;
             Name = name;
-            FileKind = ImageFileFormats.Extensions.Contains(Path.GetExtension(Name)) ? FileKind.Image : FileKind.Other;
         }
 
         internal void AddChildren(IEnumerable<FileSystemItem> items)
         {
-            _children = _children.Union(items).ToList();
-            RaisePropertyChanged(() => Children);
+            if (AreChildrenLoaded) _children.AddRange(items);
+            else LoadChildren();
+            AddChildrenEvent?.Invoke(this, new AddChildrenEventEventArgs { NewChildren = items });
         }
     }
 }

@@ -14,6 +14,7 @@ namespace MyFileSystem.Model
         void OpenFile(FileSystemItem file);
         void AddFiles(FileSystemItem parent, IEnumerable<string> filePathes);
         void Rename(FileSystemItem item, string newName);
+        FileSystemItem CreateDirectory(FileSystemItem parentDirectory);
     }
 
     public class FileSystem : IFileSystem
@@ -22,6 +23,7 @@ namespace MyFileSystem.Model
         private readonly ITempFileManager _tempFileManager;
         private readonly IGetFileLogic _getFileLogic;
         private readonly IAddFilesLogic _addFilesLogic;
+        private readonly ICreateDirectoryLogic _createDirectoryLogic;
 
         public FileSystemItem Root { get; }
 
@@ -29,12 +31,14 @@ namespace MyFileSystem.Model
             IFileSystemRepository fileSystemRepository,
             ITempFileManager tempFileManager,
             IGetFileLogic getFileLogic,
-            IAddFilesLogic addFilesLogic)
+            IAddFilesLogic addFilesLogic,
+            ICreateDirectoryLogic createDirectoryLogic)
         {
             _fileSystemRepository = fileSystemRepository;
             _tempFileManager = tempFileManager;
             _getFileLogic = getFileLogic;
             _addFilesLogic = addFilesLogic;
+            _createDirectoryLogic = createDirectoryLogic;
             Root = new FileSystemItem(_fileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка");
         }
 
@@ -59,6 +63,15 @@ namespace MyFileSystem.Model
         {
             _fileSystemRepository.Rename(item.Id, newName);
             item.Name = newName;
+        }
+
+        public FileSystemItem CreateDirectory(FileSystemItem parentDirectory)
+        {
+            var newDirectoryPoco = _createDirectoryLogic.CreateDirectory(parentDirectory.Id, parentDirectory.Children.Select(x => x.Name).ToList());
+            var newDirectory = FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, newDirectoryPoco);
+            parentDirectory.AddChildren(new[] { newDirectory });
+
+            return newDirectory;
         }
     }
 }

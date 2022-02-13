@@ -42,6 +42,7 @@ namespace MyFileSystem.Wpf.Infrastructure
             services.AddSingleton<ITempFileManager, TempFileManager>(_ => new TempFileManager(dataDirectoryPath));
             services.AddSingleton<IGetFileLogic, GetFileLogic>();
             services.AddSingleton<IAddFilesLogic, AddFilesLogic>();
+            services.AddSingleton<ICreateDirectoryLogic, CreateDirectoryLogic>();
             services.AddSingleton<IFileSystem, FileSystem>();
 
             // mvvm

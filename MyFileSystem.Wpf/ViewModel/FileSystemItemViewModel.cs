@@ -1,22 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MyFileSystem.Data;
 using MyFileSystem.Model;
 
 namespace MyFileSystem.Wpf.ViewModel
 {
     public class FileSystemItemViewModel : ItemViewModel<FileSystemItem>
     {
+        private IEnumerable<FileSystemItemViewModel> _children;
         private bool _isExpanded;
         private bool _renameModeOff;
         private bool _renameModeOn;
 
         public FileSystemItemViewModel(FileSystemItem fileSystemItem) : base(fileSystemItem)
         {
-            fileSystemItem.PropertyChanged += (s, e) => RaisePropertyChanged(e.PropertyName);
-            IsRenameModeOn = false;
-            IsRenameModeOff = true;
+            SetRenameModeOff();
+            fileSystemItem.NameChangeEvent += (s, e) =>
+            {
+                RaisePropertyChanged(() => Name);
+                RaisePropertyChanged(() => FileKind);
+            };
+            fileSystemItem.AddChildrenEvent += (s, e) =>
+            {
+                if (_children == null) return;
+                _children = _children.Union(e.NewChildren.Select(x => new FileSystemItemViewModel(x))).OrderBy(x => x, DefaultComparer.Instance).ToList();
+                RaisePropertyChanged(() => Children);
+            };
         }
 
         public string Name => InnerObject.Name;
@@ -25,13 +34,27 @@ namespace MyFileSystem.Wpf.ViewModel
 
         public FileKind FileKind => InnerObject.FileKind;
 
-        public IEnumerable<FileSystemItemViewModel> Children =>
-            InnerObject.Children?.Select(x => new FileSystemItemViewModel(x)).OrderBy(x => x, DefaultComparer.Instance).ToList();
+        public IEnumerable<FileSystemItemViewModel> Children
+        {
+            get
+            {
+                if (InnerObject.Kind == FileSystemItemKind.Directory)
+                {
+                    return _children ?? (_children = InnerObject.Children.Select(x => new FileSystemItemViewModel(x)).OrderBy(x => x, DefaultComparer.Instance).ToList());
+                }
+
+                return _children;
+            }
+        }
 
         public bool IsExpanded
         {
             get => _isExpanded;
-            set { _isExpanded = value; RaisePropertyChanged(() => IsExpanded); }
+            set
+            {
+                _isExpanded = value;
+                RaisePropertyChanged(() => IsExpanded);
+            }
         }
 
         public bool IsRenameModeOn
