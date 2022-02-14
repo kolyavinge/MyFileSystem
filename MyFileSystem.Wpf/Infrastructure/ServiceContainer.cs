@@ -5,6 +5,7 @@ using MyFileSystem.Data;
 using MyFileSystem.Data.Repository;
 using MyFileSystem.Logic;
 using MyFileSystem.Model;
+using MyFileSystem.Wpf.Mvvm;
 using MyFileSystem.Wpf.ViewModel;
 
 namespace MyFileSystem.Wpf.Infrastructure
@@ -48,6 +49,7 @@ namespace MyFileSystem.Wpf.Infrastructure
             // mvvm
             services.AddSingleton<FileSystemViewModel, FileSystemViewModel>();
             services.AddSingleton<MainViewModel, MainViewModel>();
+            services.AddSingleton<IWindowsManager, WindowsManager>();
 
             return services.BuildServiceProvider();
         }
