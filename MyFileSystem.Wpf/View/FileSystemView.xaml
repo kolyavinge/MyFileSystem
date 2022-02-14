@@ -12,6 +12,11 @@
     </UserControl.Resources>
     <Grid>
         <controls:TreeViewExt ItemsSource="{Binding Root}" SelectedItemBindable="{Binding SelectedFileSystemItem, Mode=TwoWay}">
+            <!--Resources-->
+            <controls:TreeViewExt.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#cce8ff" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+            </controls:TreeViewExt.Resources>
             <!--InputBindings-->
             <controls:TreeViewExt.InputBindings>
                 <KeyBinding Key="F2" Command="{Binding StartRenameCommand}" />
@@ -24,13 +29,10 @@
                     <MenuItem Header="Открыть файл" Command="{Binding OpenDirectoryOrFileCommand}" IsEnabled="{Binding OpenFileCommandEnabled}" />
                     <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" IsEnabled="{Binding AddFilesCommandEnabled}" />
                     <MenuItem Header="Новая папка" Command="{Binding CreateDirectoryCommand}" IsEnabled="{Binding CreateDirectoryCommandEnabled}" />
+                    <MenuItem Header="Переместить в ..." Command="{Binding MoveToDirectoryCommand}" IsEnabled="{Binding MoveToDirectoryCommandEnabled}" />
                 </ContextMenu>
             </TreeView.ContextMenu>
             <!--ItemContainerStyle-->
-            <controls:TreeViewExt.Resources>
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#cce8ff" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-            </controls:TreeViewExt.Resources>
             <controls:TreeViewExt.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />

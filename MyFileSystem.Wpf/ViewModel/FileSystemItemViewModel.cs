@@ -20,11 +20,35 @@ namespace MyFileSystem.Wpf.ViewModel
                 RaisePropertyChanged(() => Name);
                 RaisePropertyChanged(() => FileKind);
             };
+            if (fileSystemItem.Kind == FileSystemItemKind.Directory)
+            {
+                SetEventHandlers(fileSystemItem);
+            }
+        }
+
+        private void SetEventHandlers(FileSystemItem fileSystemItem)
+        {
             fileSystemItem.AddChildrenEvent += (s, e) =>
             {
-                if (_children == null) return;
-                _children = _children.Union(e.NewChildren.Select(x => new FileSystemItemViewModel(x))).OrderBy(x => x, DefaultComparer.Instance).ToList();
-                RaisePropertyChanged(() => Children);
+                UpdateChildren(_children.Union(e.AddedChildren.Select(x => new FileSystemItemViewModel(x))));
+            };
+
+            fileSystemItem.RemoveChildrenEvent += (s, e) =>
+            {
+                var removedChildrenSet = new HashSet<FileSystemItem>(e.RemovedChildren);
+                UpdateChildren(_children.Where(x => !removedChildrenSet.Contains(x.InnerObject)));
+            };
+
+            fileSystemItem.ChildrenMoveFromEvent += (s, e) =>
+            {
+                var removedChildrenSet = new HashSet<FileSystemItem>(e.MovedChildren);
+                UpdateChildren(_children.Where(x => !removedChildrenSet.Contains(x.InnerObject)));
+            };
+
+            fileSystemItem.ChildrenMoveToEvent += (s, e) =>
+            {
+                UpdateChildren(_children.Union(e.MovedChildren.Select(x => new FileSystemItemViewModel(x))));
+                IsExpanded = true;
             };
         }
 
@@ -38,13 +62,15 @@ namespace MyFileSystem.Wpf.ViewModel
         {
             get
             {
-                if (InnerObject.Kind == FileSystemItemKind.Directory)
-                {
-                    return _children ?? (_children = InnerObject.Children.Select(x => new FileSystemItemViewModel(x)).OrderBy(x => x, DefaultComparer.Instance).ToList());
-                }
-
-                return _children;
+                return _children ?? (_children = InnerObject.Children.Select(x => new FileSystemItemViewModel(x)).OrderBy(x => x, DefaultComparer.Instance).ToList());
             }
+        }
+
+        private void UpdateChildren(IEnumerable<FileSystemItemViewModel> children)
+        {
+            if (_children == null) return;
+            _children = children.OrderBy(x => x, DefaultComparer.Instance).ToList();
+            RaisePropertyChanged(() => Children);
         }
 
         public bool IsExpanded

@@ -15,6 +15,7 @@ namespace MyFileSystem.Model
         void AddFiles(FileSystemItem parent, IEnumerable<string> filePathes);
         void Rename(FileSystemItem item, string newName);
         FileSystemItem CreateDirectory(FileSystemItem parentDirectory);
+        void MoveTo(FileSystemItem itemToMove, FileSystemItem parentDirectory);
     }
 
     public class FileSystem : IFileSystem
@@ -39,7 +40,7 @@ namespace MyFileSystem.Model
             _getFileLogic = getFileLogic;
             _addFilesLogic = addFilesLogic;
             _createDirectoryLogic = createDirectoryLogic;
-            Root = new FileSystemItem(_fileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка");
+            Root = new FileSystemItem(_fileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка", null);
         }
 
         public void OpenFile(FileSystemItem file)
@@ -56,7 +57,7 @@ namespace MyFileSystem.Model
         public void AddFiles(FileSystemItem parent, IEnumerable<string> filePathes)
         {
             var result = _addFilesLogic.AddFiles(parent.Id, filePathes);
-            parent.AddChildren(result.FileSystemItems.Select(x => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, x)));
+            parent.AddChildren(result.FileSystemItems.Select(poco => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, poco, parent)));
         }
 
         public void Rename(FileSystemItem item, string newName)
@@ -68,10 +69,19 @@ namespace MyFileSystem.Model
         public FileSystemItem CreateDirectory(FileSystemItem parentDirectory)
         {
             var newDirectoryPoco = _createDirectoryLogic.CreateDirectory(parentDirectory.Id, parentDirectory.Children.Select(x => x.Name).ToList());
-            var newDirectory = FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, newDirectoryPoco);
+            var newDirectory = FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, newDirectoryPoco, parentDirectory);
             parentDirectory.AddChildren(new[] { newDirectory });
 
             return newDirectory;
+        }
+
+        public void MoveTo(FileSystemItem itemToMove, FileSystemItem parentDirectory)
+        {
+            var poco = _fileSystemRepository.GetById(itemToMove.Id);
+            poco.ParentId = parentDirectory.Id;
+            _fileSystemRepository.SaveFileSystemItems(new[] { poco });
+            itemToMove.Parent.ChildrenMoveFrom(new[] { itemToMove });
+            parentDirectory.ChildrenMoveTo(new[] { itemToMove });
         }
     }
 }

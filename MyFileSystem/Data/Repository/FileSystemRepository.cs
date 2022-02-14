@@ -44,7 +44,7 @@ namespace MyFileSystem.Data.Repository
 
         public void SaveFileSystemItems(IEnumerable<FileSystemItemPoco> fileSystemItems)
         {
-            _engine.GetCollection<FileSystemItemPoco>().Insert(fileSystemItems);
+            _engine.GetCollection<FileSystemItemPoco>().InsertOrUpdate(fileSystemItems);
         }
 
         public IEnumerable<DataFilePoco> GetDataFiles()

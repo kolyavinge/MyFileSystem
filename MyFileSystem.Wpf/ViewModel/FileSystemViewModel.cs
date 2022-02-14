@@ -10,6 +10,7 @@ namespace MyFileSystem.Wpf.ViewModel
     public class FileSystemViewModel : NotificationObject
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IWindowsManager _windowsManager;
         private readonly FileSystemItemViewModel _rootItem;
         private FileSystemItemViewModel _selectedFileSystemItem;
         private string _newItemName;
@@ -26,6 +27,7 @@ namespace MyFileSystem.Wpf.ViewModel
                 RaisePropertyChanged(() => OpenFileCommandEnabled);
                 RaisePropertyChanged(() => AddFilesCommandEnabled);
                 RaisePropertyChanged(() => CreateDirectoryCommandEnabled);
+                RaisePropertyChanged(() => MoveToDirectoryCommandEnabled);
             }
         }
 
@@ -51,15 +53,22 @@ namespace MyFileSystem.Wpf.ViewModel
 
         public ICommand CreateDirectoryCommand => new ActionCommand(CreateDirectory);
 
+        public ICommand MoveToDirectoryCommand => new ActionCommand(MoveToDirectory);
+
         public bool OpenFileCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.File;
 
         public bool AddFilesCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory;
 
         public bool CreateDirectoryCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory;
 
-        public FileSystemViewModel(IFileSystem fileSystem)
+        public bool MoveToDirectoryCommandEnabled => SelectedFileSystemItem != null && SelectedFileSystemItem != _rootItem;
+
+        public FileSystemViewModel(
+            IFileSystem fileSystem,
+            IWindowsManager windowsManager)
         {
             _fileSystem = fileSystem;
+            _windowsManager = windowsManager;
             _rootItem = new FileSystemItemViewModel(_fileSystem.Root) { IsExpanded = true };
             OffRenameMode();
         }
@@ -112,16 +121,25 @@ namespace MyFileSystem.Wpf.ViewModel
             StartRename();
         }
 
+        private void MoveToDirectory()
+        {
+            var vm = _windowsManager.ShowDialog<SelectDirectoryViewModel>();
+            if (vm.IsOK)
+            {
+                var itemToMove = SelectedFileSystemItem.InnerObject;
+                var parentDirectory = vm.SelectedFileSystemItem.InnerObject;
+                _fileSystem.MoveTo(itemToMove, parentDirectory);
+            }
+        }
+
         private void OnRenameMode()
         {
-            if (SelectedFileSystemItem == null) return;
-            SelectedFileSystemItem.SetRenameModeOn();
+            SelectedFileSystemItem?.SetRenameModeOn();
         }
 
         private void OffRenameMode()
         {
-            if (SelectedFileSystemItem == null) return;
-            SelectedFileSystemItem.SetRenameModeOff();
+            SelectedFileSystemItem?.SetRenameModeOff();
         }
     }
 }

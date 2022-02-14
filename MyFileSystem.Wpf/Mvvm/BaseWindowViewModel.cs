@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MyFileSystem.Wpf.Mvvm
 {
@@ -11,6 +8,20 @@ namespace MyFileSystem.Wpf.Mvvm
         public event EventHandler CloseEvent;
 
         public bool IsOK { get; private set; }
+
+        public ICommand OKCommand => new ActionCommand(OK);
+
+        public ICommand CancelCommand => new ActionCommand(Cancel);
+
+        protected virtual void OK()
+        {
+            Close(true);
+        }
+
+        protected virtual void Cancel()
+        {
+            Close(false);
+        }
 
         protected void Close(bool ok)
         {

@@ -14,9 +14,24 @@ namespace MyFileSystem.Model
             public string Name { get; set; }
         }
 
-        public class AddChildrenEventEventArgs : EventArgs
+        public class AddChildrenEventArgs : EventArgs
         {
-            public IEnumerable<FileSystemItem> NewChildren { get; set; }
+            public IEnumerable<FileSystemItem> AddedChildren { get; set; }
+        }
+
+        public class RemoveChildrenEventArgs : EventArgs
+        {
+            public IEnumerable<FileSystemItem> RemovedChildren { get; set; }
+        }
+
+        public class ChildrenMoveFromEventArgs : EventArgs
+        {
+            public IEnumerable<FileSystemItem> MovedChildren { get; set; }
+        }
+
+        public class ChildrenMoveToEventArgs : EventArgs
+        {
+            public IEnumerable<FileSystemItem> MovedChildren { get; set; }
         }
 
         private readonly IFileSystemRepository _fileSystemRepository;
@@ -25,7 +40,13 @@ namespace MyFileSystem.Model
 
         public event EventHandler<NameChangeEventEventArgs> NameChangeEvent;
 
-        public event EventHandler<AddChildrenEventEventArgs> AddChildrenEvent;
+        public event EventHandler<AddChildrenEventArgs> AddChildrenEvent;
+
+        public event EventHandler<RemoveChildrenEventArgs> RemoveChildrenEvent;
+
+        public event EventHandler<ChildrenMoveFromEventArgs> ChildrenMoveFromEvent;
+
+        public event EventHandler<ChildrenMoveToEventArgs> ChildrenMoveToEvent;
 
         internal uint Id { get; private set; }
 
@@ -50,42 +71,73 @@ namespace MyFileSystem.Model
         {
             get
             {
-                if (!AreChildrenLoaded) LoadChildren();
+                if (!ChildrenLoaded) LoadChildren();
                 return _children;
             }
         }
 
-        public bool AreChildrenLoaded
-        {
-            get
-            {
-                if (Kind == FileSystemItemKind.Directory) return _children != null;
-                else return true;
-            }
-        }
+        public bool ChildrenLoaded => _children != null;
+
+        public FileSystemItem Parent { get; internal set; }
 
         private void LoadChildren()
         {
-            _children = _fileSystemRepository.GetChildren(Id).Select(x => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, x)).ToList();
+            if (Kind == FileSystemItemKind.Directory)
+            {
+                _children = _fileSystemRepository
+                    .GetChildren(Id)
+                    .Select(poco => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, poco, this))
+                    .ToList();
+            }
+            else
+            {
+                _children = new List<FileSystemItem>();
+            }
         }
 
         public FileSystemItem(
             IFileSystemRepository fileSystemRepository,
             uint id,
             FileSystemItemKind kind,
-            string name)
+            string name,
+            FileSystemItem parent)
         {
             _fileSystemRepository = fileSystemRepository;
             Id = id;
             Kind = kind;
             Name = name;
+            Parent = parent;
         }
 
         internal void AddChildren(IEnumerable<FileSystemItem> items)
         {
-            if (AreChildrenLoaded) _children.AddRange(items);
+            items.Each(x => x.Parent = this);
+            if (ChildrenLoaded) _children.AddRange(items);
             else LoadChildren();
-            AddChildrenEvent?.Invoke(this, new AddChildrenEventEventArgs { NewChildren = items });
+            AddChildrenEvent?.Invoke(this, new AddChildrenEventArgs { AddedChildren = items });
+        }
+
+        internal void RemoveChildren(IEnumerable<FileSystemItem> items)
+        {
+            if (ChildrenLoaded)
+            {
+                items.Each(x => _children.Remove(x));
+                RemoveChildrenEvent?.Invoke(this, new RemoveChildrenEventArgs { RemovedChildren = items });
+            }
+        }
+
+        internal void ChildrenMoveFrom(IEnumerable<FileSystemItem> items)
+        {
+            if (ChildrenLoaded) items.Each(x => _children.Remove(x));
+            ChildrenMoveFromEvent?.Invoke(this, new ChildrenMoveFromEventArgs { MovedChildren = items });
+        }
+
+        internal void ChildrenMoveTo(IEnumerable<FileSystemItem> items)
+        {
+            items.Each(x => x.Parent = this);
+            if (ChildrenLoaded) _children.AddRange(items);
+            else LoadChildren();
+            ChildrenMoveToEvent?.Invoke(this, new ChildrenMoveToEventArgs { MovedChildren = items });
         }
     }
 }
