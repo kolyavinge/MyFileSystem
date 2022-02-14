@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace MyFileSystem.Model.Utils
+namespace MyFileSystem.Wpf.Mvvm
 {
     public abstract class NotificationObject : INotifyPropertyChanged
     {

@@ -3,8 +3,7 @@ using System.Linq;
 using System.Windows.Input;
 using Microsoft.Win32;
 using MyFileSystem.Model;
-using MyFileSystem.Model.Utils;
-using MyFileSystem.Wpf.Utils;
+using MyFileSystem.Wpf.Mvvm;
 
 namespace MyFileSystem.Wpf.ViewModel
 {
