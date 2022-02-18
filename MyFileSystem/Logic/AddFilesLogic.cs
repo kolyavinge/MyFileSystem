@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MyFileSystem.Data;
 using MyFileSystem.Data.Poco;
 using MyFileSystem.Data.Repository;
 
@@ -27,16 +26,16 @@ namespace MyFileSystem.Logic
         {
             var lastItemId = _fileSystemRepository.GetLastItemId();
             var dataFiles = _fileSystemRepository.GetDataFiles().OrderBy(x => x.Id).ToList();
-            var currentDataFile = dataFiles.FirstOrDefault(x => x.RecordsCount < DataFilePoco.MaxRecords);
-            if (currentDataFile == null)
-            {
-                currentDataFile = new DataFilePoco { Id = (ushort)(dataFiles.Count + 1), RecordsCount = 0 };
-                dataFiles.Add(currentDataFile);
-            }
+            var currentDataFile = GetNextFreeDataFileOrCreateNew(dataFiles);
             var fileSystemItems = new List<FileSystemItemPoco>();
             var dataRecords = new List<DataRecord>();
             foreach (var filePath in filePathes)
             {
+                if (currentDataFile.RecordsCount + 1 > DataFilePoco.MaxRecords)
+                {
+                    currentDataFile = GetNextFreeDataFileOrCreateNew(dataFiles);
+                }
+                currentDataFile.RecordsCount++;
                 var fileSystemItem = new FileSystemItemPoco
                 {
                     Id = lastItemId.Value++,
@@ -52,12 +51,6 @@ namespace MyFileSystem.Logic
                     RecordName = fileSystemItem.Id.ToString(),
                     DataFileNumber = fileSystemItem.DataFileNumber
                 });
-                currentDataFile.RecordsCount++;
-                if (currentDataFile.RecordsCount > DataFilePoco.MaxRecords)
-                {
-                    currentDataFile = new DataFilePoco { Id = (ushort)(dataFiles.Count + 1), RecordsCount = 0 };
-                    dataFiles.Add(currentDataFile);
-                }
             }
             _fileSystemRepository.SaveFileSystemItems(fileSystemItems);
             _fileSystemRepository.SaveDataFiles(dataFiles);
@@ -87,6 +80,18 @@ namespace MyFileSystem.Logic
             {
                 FileSystemItems = fileSystemItems
             };
+        }
+
+        private DataFilePoco GetNextFreeDataFileOrCreateNew(List<DataFilePoco> dataFiles)
+        {
+            var dataFile = dataFiles.FirstOrDefault(x => x.RecordsCount < DataFilePoco.MaxRecords);
+            if (dataFile == null)
+            {
+                dataFile = new DataFilePoco { Id = (ushort)(dataFiles.Count + 1), RecordsCount = 0 };
+                dataFiles.Add(dataFile);
+            }
+
+            return dataFile;
         }
     }
 
