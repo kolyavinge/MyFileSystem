@@ -27,11 +27,11 @@
             <!--ContextMenu-->
             <TreeView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Открыть файл" Command="{Binding OpenDirectoryOrFileCommand}" IsEnabled="{Binding OpenFileCommandEnabled}" />
-                    <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" IsEnabled="{Binding AddFilesCommandEnabled}" />
-                    <MenuItem Header="Новая папка" Command="{Binding CreateDirectoryCommand}" IsEnabled="{Binding CreateDirectoryCommandEnabled}" />
-                    <MenuItem Header="Переместить в ..." Command="{Binding MoveToDirectoryCommand}" IsEnabled="{Binding MoveToDirectoryCommandEnabled}" />
-                    <MenuItem Header="Удалить" Command="{Binding DeleteItemCommand}" IsEnabled="{Binding DeleteItemCommandEnabled}" />
+                    <MenuItem Header="Открыть файл" Command="{Binding OpenDirectoryOrFileCommand}" />
+                    <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" />
+                    <MenuItem Header="Новая папка" Command="{Binding CreateDirectoryCommand}" />
+                    <MenuItem Header="Переместить в ..." Command="{Binding MoveToDirectoryCommand}" />
+                    <MenuItem Header="Удалить" Command="{Binding DeleteItemCommand}" />
                 </ContextMenu>
             </TreeView.ContextMenu>
             <!--ItemContainerStyle-->

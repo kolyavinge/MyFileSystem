@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using Microsoft.Win32;
 using MyFileSystem.Model;
 using MyFileSystem.Wpf.Controls;
@@ -26,11 +25,11 @@ namespace MyFileSystem.Wpf.ViewModel
             {
                 OffRenameMode();
                 _selectedFileSystemItem = value;
-                RaisePropertyChanged(() => OpenFileCommandEnabled);
-                RaisePropertyChanged(() => AddFilesCommandEnabled);
-                RaisePropertyChanged(() => CreateDirectoryCommandEnabled);
-                RaisePropertyChanged(() => MoveToDirectoryCommandEnabled);
-                RaisePropertyChanged(() => DeleteItemCommandEnabled);
+                OpenDirectoryOrFileCommand.UpdateCanExecute();
+                AddFilesCommand.UpdateCanExecute();
+                CreateDirectoryCommand.UpdateCanExecute();
+                MoveToDirectoryCommand.UpdateCanExecute();
+                DeleteItemCommand.UpdateCanExecute();
             }
         }
 
@@ -44,31 +43,14 @@ namespace MyFileSystem.Wpf.ViewModel
             }
         }
 
-        public ICommand OpenDirectoryOrFileCommand => new ActionCommand(OpenDirectoryOrFile);
-
-        public ICommand AddFilesCommand => new ActionCommand(AddFiles);
-
-        public ICommand StartRenameCommand => new ActionCommand(StartRename);
-
-        public ICommand ApplyRenameCommand => new ActionCommand(ApplyRename);
-
-        public ICommand UndoRenameCommand => new ActionCommand(UndoRename);
-
-        public ICommand CreateDirectoryCommand => new ActionCommand(CreateDirectory);
-
-        public ICommand MoveToDirectoryCommand => new ActionCommand(MoveToDirectory);
-
-        public ICommand DeleteItemCommand => new ActionCommand(DeleteItem);
-
-        public bool OpenFileCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.File;
-
-        public bool AddFilesCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory;
-
-        public bool CreateDirectoryCommandEnabled => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory;
-
-        public bool MoveToDirectoryCommandEnabled => SelectedFileSystemItem != null && SelectedFileSystemItem != _rootItem;
-
-        public bool DeleteItemCommandEnabled => SelectedFileSystemItem != null && SelectedFileSystemItem != _rootItem;
+        public ActionCommand OpenDirectoryOrFileCommand { get; private set; }
+        public ActionCommand AddFilesCommand { get; private set; }
+        public ActionCommand StartRenameCommand { get; private set; }
+        public ActionCommand ApplyRenameCommand { get; private set; }
+        public ActionCommand UndoRenameCommand { get; private set; }
+        public ActionCommand CreateDirectoryCommand { get; private set; }
+        public ActionCommand MoveToDirectoryCommand { get; private set; }
+        public ActionCommand DeleteItemCommand { get; private set; }
 
         public FileSystemViewModel(
             IFileSystem fileSystem,
@@ -79,7 +61,20 @@ namespace MyFileSystem.Wpf.ViewModel
             _windowsManager = windowsManager;
             _messageBox = messageBox;
             _rootItem = new FileSystemItemViewModel(_fileSystem.Root) { IsExpanded = true };
+            InitCommands();
             OffRenameMode();
+        }
+
+        private void InitCommands()
+        {
+            OpenDirectoryOrFileCommand = new ActionCommand(OpenDirectoryOrFile, () => SelectedFileSystemItem?.Kind == FileSystemItemKind.File);
+            AddFilesCommand = new ActionCommand(AddFiles, () => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory);
+            StartRenameCommand = new ActionCommand(StartRename, () => SelectedFileSystemItem != null && SelectedFileSystemItem != _rootItem);
+            ApplyRenameCommand = new ActionCommand(ApplyRename, () => SelectedFileSystemItem != null);
+            UndoRenameCommand = new ActionCommand(OffRenameMode);
+            CreateDirectoryCommand = new ActionCommand(CreateDirectory, () => SelectedFileSystemItem?.Kind == FileSystemItemKind.Directory);
+            MoveToDirectoryCommand = new ActionCommand(MoveToDirectory, () => SelectedFileSystemItem != null && SelectedFileSystemItem != _rootItem);
+            DeleteItemCommand = new ActionCommand(DeleteItem, () => SelectedFileSystemItem != null && SelectedFileSystemItem != _rootItem);
         }
 
         private void AddFiles()
@@ -102,22 +97,14 @@ namespace MyFileSystem.Wpf.ViewModel
 
         private void StartRename()
         {
-            if (SelectedFileSystemItem == null) return;
-            if (SelectedFileSystemItem == _rootItem) return;
             NewItemName = SelectedFileSystemItem.Name;
             OnRenameMode();
         }
 
         private void ApplyRename()
         {
-            if (SelectedFileSystemItem == null) return;
             OffRenameMode();
             _fileSystem.Rename(SelectedFileSystemItem.InnerObject, NewItemName);
-        }
-
-        private void UndoRename()
-        {
-            OffRenameMode();
         }
 
         private void CreateDirectory()
@@ -143,9 +130,8 @@ namespace MyFileSystem.Wpf.ViewModel
 
         private void DeleteItem()
         {
-            if (!DeleteItemCommandEnabled) return; // ??
             var result = _messageBox.Show(
-                "Точно удаляем?",
+                "Точно удаляем?" + new string(' ', 20),
                 "My File System",
                 System.Windows.MessageBoxButton.YesNo,
                 System.Windows.MessageBoxImage.Question,
