@@ -19,9 +19,9 @@ namespace MyFileSystem.Model
             public IEnumerable<FileSystemItem> AddedChildren { get; set; }
         }
 
-        public class RemoveChildrenEventArgs : EventArgs
+        public class DeleteChildrenEventArgs : EventArgs
         {
-            public IEnumerable<FileSystemItem> RemovedChildren { get; set; }
+            public IEnumerable<FileSystemItem> DeletedChildren { get; set; }
         }
 
         public class ChildrenMoveFromEventArgs : EventArgs
@@ -42,7 +42,7 @@ namespace MyFileSystem.Model
 
         public event EventHandler<AddChildrenEventArgs> AddChildrenEvent;
 
-        public event EventHandler<RemoveChildrenEventArgs> RemoveChildrenEvent;
+        public event EventHandler<DeleteChildrenEventArgs> RemoveChildrenEvent;
 
         public event EventHandler<ChildrenMoveFromEventArgs> ChildrenMoveFromEvent;
 
@@ -76,23 +76,31 @@ namespace MyFileSystem.Model
             }
         }
 
-        public bool ChildrenLoaded => _children != null;
+        internal bool ChildrenLoaded => _children != null;
 
         public FileSystemItem Parent { get; internal set; }
 
-        private void LoadChildren()
+        internal ushort DataFileNumber { get; }
+
+        public int Depth
         {
-            if (Kind == FileSystemItemKind.Directory)
+            get
             {
-                _children = _fileSystemRepository
-                    .GetChildren(Id)
-                    .Select(poco => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, poco, this))
-                    .ToList();
+                int depth = 0;
+                var parent = Parent;
+                while (parent != null)
+                {
+                    depth++;
+                    parent = parent.Parent;
+                }
+
+                return depth;
             }
-            else
-            {
-                _children = new List<FileSystemItem>();
-            }
+        }
+
+        internal IEnumerable<FileSystemItem> GetAllChildren()
+        {
+            return Children.Union(Children.SelectMany(x => x.Children));
         }
 
         public FileSystemItem(
@@ -100,13 +108,15 @@ namespace MyFileSystem.Model
             uint id,
             FileSystemItemKind kind,
             string name,
-            FileSystemItem parent)
+            FileSystemItem parent,
+            ushort dataFileNumber)
         {
             _fileSystemRepository = fileSystemRepository;
             Id = id;
             Kind = kind;
             Name = name;
             Parent = parent;
+            DataFileNumber = dataFileNumber;
         }
 
         internal void AddChildren(IEnumerable<FileSystemItem> items)
@@ -117,12 +127,12 @@ namespace MyFileSystem.Model
             AddChildrenEvent?.Invoke(this, new AddChildrenEventArgs { AddedChildren = items });
         }
 
-        internal void RemoveChildren(IEnumerable<FileSystemItem> items)
+        internal void DeleteChildren(IEnumerable<FileSystemItem> items)
         {
             if (ChildrenLoaded)
             {
                 items.Each(x => _children.Remove(x));
-                RemoveChildrenEvent?.Invoke(this, new RemoveChildrenEventArgs { RemovedChildren = items });
+                RemoveChildrenEvent?.Invoke(this, new DeleteChildrenEventArgs { DeletedChildren = items });
             }
         }
 
@@ -138,6 +148,21 @@ namespace MyFileSystem.Model
             if (ChildrenLoaded) _children.AddRange(items);
             else LoadChildren();
             ChildrenMoveToEvent?.Invoke(this, new ChildrenMoveToEventArgs { MovedChildren = items });
+        }
+
+        private void LoadChildren()
+        {
+            if (Kind == FileSystemItemKind.Directory)
+            {
+                _children = _fileSystemRepository
+                    .GetChildren(Id)
+                    .Select(poco => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, poco, this))
+                    .ToList();
+            }
+            else
+            {
+                _children = new List<FileSystemItem>();
+            }
         }
     }
 }

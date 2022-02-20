@@ -5,6 +5,7 @@ using MyFileSystem.Data;
 using MyFileSystem.Data.Repository;
 using MyFileSystem.Logic;
 using MyFileSystem.Model;
+using MyFileSystem.Wpf.Controls;
 using MyFileSystem.Wpf.Mvvm;
 using MyFileSystem.Wpf.ViewModel;
 
@@ -44,6 +45,7 @@ namespace MyFileSystem.Wpf.Infrastructure
             services.AddSingleton<IGetFileLogic, GetFileLogic>();
             services.AddSingleton<IAddFilesLogic, AddFilesLogic>();
             services.AddSingleton<ICreateDirectoryLogic, CreateDirectoryLogic>();
+            services.AddSingleton<IDeleteFileSystemItemLogic, DeleteFileSystemItemLogic>();
             services.AddSingleton<IFileSystem, FileSystem>();
 
             // mvvm
@@ -51,6 +53,7 @@ namespace MyFileSystem.Wpf.Infrastructure
             services.AddSingleton<SelectDirectoryViewModel, SelectDirectoryViewModel>();
             services.AddSingleton<MainViewModel, MainViewModel>();
             services.AddSingleton<IWindowsManager, WindowsManager>();
+            services.AddSingleton<IMessageBox, MessageBox>();
 
             return services.BuildServiceProvider();
         }

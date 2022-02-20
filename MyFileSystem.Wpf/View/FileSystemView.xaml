@@ -22,6 +22,7 @@
                 <KeyBinding Key="F2" Command="{Binding StartRenameCommand}" />
                 <KeyBinding Key="Return" Command="{Binding ApplyRenameCommand}" />
                 <KeyBinding Key="Esc" Command="{Binding UndoRenameCommand}" />
+                <KeyBinding Key="Delete" Command="{Binding DeleteItemCommand}" />
             </controls:TreeViewExt.InputBindings>
             <!--ContextMenu-->
             <TreeView.ContextMenu>
@@ -30,6 +31,7 @@
                     <MenuItem Header="Добавить файлы" Command="{Binding AddFilesCommand}" IsEnabled="{Binding AddFilesCommandEnabled}" />
                     <MenuItem Header="Новая папка" Command="{Binding CreateDirectoryCommand}" IsEnabled="{Binding CreateDirectoryCommandEnabled}" />
                     <MenuItem Header="Переместить в ..." Command="{Binding MoveToDirectoryCommand}" IsEnabled="{Binding MoveToDirectoryCommandEnabled}" />
+                    <MenuItem Header="Удалить" Command="{Binding DeleteItemCommand}" IsEnabled="{Binding DeleteItemCommandEnabled}" />
                 </ContextMenu>
             </TreeView.ContextMenu>
             <!--ItemContainerStyle-->

@@ -16,6 +16,7 @@ namespace MyFileSystem.Model
         void Rename(FileSystemItem item, string newName);
         FileSystemItem CreateDirectory(FileSystemItem parentDirectory);
         void MoveTo(FileSystemItem itemToMove, FileSystemItem parentDirectory);
+        void DeleteItems(IEnumerable<FileSystemItem> itemsToDelete);
     }
 
     public class FileSystem : IFileSystem
@@ -25,6 +26,7 @@ namespace MyFileSystem.Model
         private readonly IGetFileLogic _getFileLogic;
         private readonly IAddFilesLogic _addFilesLogic;
         private readonly ICreateDirectoryLogic _createDirectoryLogic;
+        private readonly IDeleteFileSystemItemLogic _deleteFileSystemItemLogic;
 
         public FileSystemItem Root { get; }
 
@@ -33,14 +35,16 @@ namespace MyFileSystem.Model
             ITempFileManager tempFileManager,
             IGetFileLogic getFileLogic,
             IAddFilesLogic addFilesLogic,
-            ICreateDirectoryLogic createDirectoryLogic)
+            ICreateDirectoryLogic createDirectoryLogic,
+            IDeleteFileSystemItemLogic deleteFileSystemItemLogic)
         {
             _fileSystemRepository = fileSystemRepository;
             _tempFileManager = tempFileManager;
             _getFileLogic = getFileLogic;
             _addFilesLogic = addFilesLogic;
             _createDirectoryLogic = createDirectoryLogic;
-            Root = new FileSystemItem(_fileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка", null);
+            _deleteFileSystemItemLogic = deleteFileSystemItemLogic;
+            Root = new FileSystemItem(_fileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка", null, 0);
         }
 
         public void OpenFile(FileSystemItem file)
@@ -82,6 +86,11 @@ namespace MyFileSystem.Model
             _fileSystemRepository.SaveFileSystemItems(new[] { poco });
             itemToMove.Parent.ChildrenMoveFrom(new[] { itemToMove });
             parentDirectory.ChildrenMoveTo(new[] { itemToMove });
+        }
+
+        public void DeleteItems(IEnumerable<FileSystemItem> itemsToDelete)
+        {
+            _deleteFileSystemItemLogic.DeleteItems(itemsToDelete);
         }
     }
 }

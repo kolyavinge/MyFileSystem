@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using MyFileSystem.Utils;
 using SingleFileStorage;
 
 namespace MyFileSystem.Data.Repository
@@ -11,6 +12,7 @@ namespace MyFileSystem.Data.Repository
         void CloseCurrentDataFile();
         void CreateRecord(string recordName);
         Stream OpenDataRecord(string recordName);
+        void DeleteRecords(IEnumerable<string> recordNames);
     }
 
     internal class DataFileRepository : IDataFileRepository
@@ -51,6 +53,11 @@ namespace MyFileSystem.Data.Repository
         public Stream OpenDataRecord(string recordName)
         {
             return _storage.OpenRecord(recordName);
+        }
+
+        public void DeleteRecords(IEnumerable<string> recordNames)
+        {
+            recordNames.Each(_storage.DeleteRecord);
         }
     }
 }

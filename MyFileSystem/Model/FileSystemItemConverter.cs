@@ -12,7 +12,8 @@ namespace MyFileSystem.Model
                 poco.Id,
                 (FileSystemItemKind)poco.Kind,
                 poco.Name,
-                parent
+                parent,
+                poco.DataFileNumber
             );
         }
     }

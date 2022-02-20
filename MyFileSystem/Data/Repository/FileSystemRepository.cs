@@ -15,6 +15,7 @@ namespace MyFileSystem.Data.Repository
         LastItemIdPoco GetLastItemId();
         void SaveLastItemId(LastItemIdPoco item);
         void Rename(uint itemId, string newName);
+        void DeleteFileSystemItems(IEnumerable<uint> idList);
     }
 
     internal class FileSystemRepository : IFileSystemRepository
@@ -72,6 +73,11 @@ namespace MyFileSystem.Data.Repository
             var item = _engine.GetCollection<FileSystemItemPoco>().Get(itemId);
             item.Name = newName;
             _engine.GetCollection<FileSystemItemPoco>().Update(item);
+        }
+
+        public void DeleteFileSystemItems(IEnumerable<uint> idList)
+        {
+            _engine.GetCollection<FileSystemItemPoco>().Delete(idList.Cast<object>());
         }
     }
 }

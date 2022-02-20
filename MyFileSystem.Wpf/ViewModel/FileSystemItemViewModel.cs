@@ -35,7 +35,7 @@ namespace MyFileSystem.Wpf.ViewModel
 
             fileSystemItem.RemoveChildrenEvent += (s, e) =>
             {
-                var removedChildrenSet = new HashSet<FileSystemItem>(e.RemovedChildren);
+                var removedChildrenSet = new HashSet<FileSystemItem>(e.DeletedChildren);
                 UpdateChildren(_children.Where(x => !removedChildrenSet.Contains(x.InnerObject)));
             };
 
