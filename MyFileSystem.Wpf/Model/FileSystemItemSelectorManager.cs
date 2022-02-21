@@ -5,6 +5,7 @@ namespace MyFileSystem.Wpf.Model
 {
     public interface IFileSystemItemSelectorManager
     {
+        event EventHandler<ChangeSelectedItemEventArgs> ChangeSelectedItemEvent;
         FileSystemItem SelectedItem { get; set; }
     }
 
@@ -24,14 +25,15 @@ namespace MyFileSystem.Wpf.Model
             }
         }
 
-        public class ChangeSelectedItemEventArgs : EventArgs
-        {
-            public FileSystemItem SelectedItem { get; }
+    }
 
-            public ChangeSelectedItemEventArgs(FileSystemItem selectedItem)
-            {
-                SelectedItem = selectedItem;
-            }
+    public class ChangeSelectedItemEventArgs : EventArgs
+    {
+        public FileSystemItem SelectedItem { get; }
+
+        public ChangeSelectedItemEventArgs(FileSystemItem selectedItem)
+        {
+            SelectedItem = selectedItem;
         }
     }
 }

@@ -55,6 +55,7 @@ namespace MyFileSystem.Wpf.Infrastructure
             // mvvm
             services.AddSingleton<FileSystemViewModel, FileSystemViewModel>();
             services.AddSingleton<SelectDirectoryViewModel, SelectDirectoryViewModel>();
+            services.AddSingleton<ImageFileViewModel, ImageFileViewModel>();
             services.AddSingleton<MainViewModel, MainViewModel>();
             services.AddSingleton<IWindowsManager, WindowsManager>();
             services.AddSingleton<IMessageBox, MessageBox>();

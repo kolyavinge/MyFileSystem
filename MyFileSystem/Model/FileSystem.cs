@@ -17,11 +17,13 @@ namespace MyFileSystem.Model
         FileSystemItem CreateDirectory(FileSystemItem parentDirectory);
         void MoveTo(FileSystemItem itemToMove, FileSystemItem parentDirectory);
         void DeleteItems(IEnumerable<FileSystemItem> itemsToDelete);
+        byte[] GetFileContent(FileSystemItem file);
     }
 
     public class FileSystem : IFileSystem
     {
         private readonly IFileSystemRepository _fileSystemRepository;
+        private readonly IDataFileRepository _dataFileRepository;
         private readonly ITempFileManager _tempFileManager;
         private readonly IGetFileLogic _getFileLogic;
         private readonly IAddFilesLogic _addFilesLogic;
@@ -32,6 +34,7 @@ namespace MyFileSystem.Model
 
         public FileSystem(
             IFileSystemRepository fileSystemRepository,
+            IDataFileRepository dataFileRepository,
             ITempFileManager tempFileManager,
             IGetFileLogic getFileLogic,
             IAddFilesLogic addFilesLogic,
@@ -39,6 +42,7 @@ namespace MyFileSystem.Model
             IDeleteFileSystemItemLogic deleteFileSystemItemLogic)
         {
             _fileSystemRepository = fileSystemRepository;
+            _dataFileRepository = dataFileRepository;
             _tempFileManager = tempFileManager;
             _getFileLogic = getFileLogic;
             _addFilesLogic = addFilesLogic;
@@ -91,6 +95,20 @@ namespace MyFileSystem.Model
         public void DeleteItems(IEnumerable<FileSystemItem> itemsToDelete)
         {
             _deleteFileSystemItemLogic.DeleteItems(itemsToDelete);
+        }
+
+        public byte[] GetFileContent(FileSystemItem file)
+        {
+            byte[] result = null;
+            _dataFileRepository.OpenDataFile(file.DataFileNumber);
+            using (var recordStream = _dataFileRepository.OpenDataRecord(file.Id.ToString()))
+            {
+                result = new byte[recordStream.Length];
+                recordStream.Read(result, 0, result.Length);
+            }
+            _dataFileRepository.CloseCurrentDataFile();
+
+            return result;
         }
     }
 }

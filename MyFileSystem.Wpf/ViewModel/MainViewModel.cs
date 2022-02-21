@@ -6,9 +6,14 @@ namespace MyFileSystem.Wpf.ViewModel
     {
         public FileSystemViewModel FileSystemViewModel { get; }
 
-        public MainViewModel(FileSystemViewModel fileSystemViewModel)
+        public ImageFileViewModel ImageFileViewModel { get; }
+
+        public MainViewModel(
+            FileSystemViewModel fileSystemViewModel,
+            ImageFileViewModel imageFileViewModel)
         {
             FileSystemViewModel = fileSystemViewModel;
+            ImageFileViewModel = imageFileViewModel;
         }
     }
 }

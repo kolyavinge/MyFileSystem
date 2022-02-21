@@ -7,6 +7,9 @@
         Title="My File System"
         WindowStartupLocation="CenterScreen"
         Height="450" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="200" Width="300" />
@@ -14,6 +17,8 @@
         </Grid.ColumnDefinitions>
         <view:FileSystemView DataContext="{Binding FileSystemViewModel}" />
         <GridSplitter Width="6" />
-        <Grid Grid.Column="1" />
+        <Grid Grid.Column="1">
+            <view:ImageFileView DataContext="{Binding ImageFileViewModel}" Visibility="{Binding IsActive, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+        </Grid>
     </Grid>
 </Window>

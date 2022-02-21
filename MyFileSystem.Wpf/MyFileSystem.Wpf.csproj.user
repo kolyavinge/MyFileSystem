@@ -10,6 +10,9 @@
     <Compile Update="View\FileSystemView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\ImageFileView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\MainView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -19,6 +22,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="View\FileSystemView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\ImageFileView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\MainView.xaml">
