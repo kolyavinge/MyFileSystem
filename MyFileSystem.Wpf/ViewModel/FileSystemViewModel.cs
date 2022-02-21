@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.Win32;
 using MyFileSystem.Model;
 using MyFileSystem.Wpf.Controls;
+using MyFileSystem.Wpf.Model;
 using MyFileSystem.Wpf.Mvvm;
 
 namespace MyFileSystem.Wpf.ViewModel
@@ -10,6 +11,7 @@ namespace MyFileSystem.Wpf.ViewModel
     public class FileSystemViewModel : NotificationObject
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IFileSystemItemSelectorManager _fileSystemItemSelectorManager;
         private readonly IWindowsManager _windowsManager;
         private readonly IMessageBox _messageBox;
         private readonly FileSystemItemViewModel _rootItem;
@@ -25,6 +27,7 @@ namespace MyFileSystem.Wpf.ViewModel
             {
                 OffRenameMode();
                 _selectedFileSystemItem = value;
+                _fileSystemItemSelectorManager.SelectedItem = _selectedFileSystemItem.InnerObject;
                 OpenDirectoryOrFileCommand.UpdateCanExecute();
                 AddFilesCommand.UpdateCanExecute();
                 CreateDirectoryCommand.UpdateCanExecute();
@@ -54,10 +57,12 @@ namespace MyFileSystem.Wpf.ViewModel
 
         public FileSystemViewModel(
             IFileSystem fileSystem,
+            IFileSystemItemSelectorManager fileSystemItemSelectorManager,
             IWindowsManager windowsManager,
             IMessageBox messageBox)
         {
             _fileSystem = fileSystem;
+            _fileSystemItemSelectorManager = fileSystemItemSelectorManager;
             _windowsManager = windowsManager;
             _messageBox = messageBox;
             _rootItem = new FileSystemItemViewModel(_fileSystem.Root) { IsExpanded = true };
