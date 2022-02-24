@@ -6,19 +6,26 @@
         mc:Ignorable="d"
         Title="My File System"
         WindowStartupLocation="CenterScreen"
-        Height="450" Width="800">
+        Height="800" Width="1200">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="200" Width="300" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <view:FileSystemView DataContext="{Binding FileSystemViewModel}" />
-        <GridSplitter Width="6" />
-        <Grid Grid.Column="1">
-            <view:ImageFileView DataContext="{Binding ImageFileViewModel}" Visibility="{Binding IsActive, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="22" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="200" Width="250" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <view:FileSystemView Grid.Column="0" DataContext="{Binding FileSystemViewModel}" />
+            <GridSplitter Grid.Column="0" Width="6" />
+            <Grid Grid.Column="1">
+                <view:ImageFileView DataContext="{Binding ImageFileViewModel}" Visibility="{Binding IsActive, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+            </Grid>
         </Grid>
+        <Grid Grid.Row="1" />
     </Grid>
 </Window>
