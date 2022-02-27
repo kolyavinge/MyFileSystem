@@ -9,7 +9,7 @@ namespace MyFileSystem.Wpf.View
         public MainView()
         {
             InitializeComponent();
-            DataContext = ServiceContainer.GetService<MainViewModel>();
+            DataContext = DependencyContainer.Resolve<MainViewModel>();
         }
     }
 }

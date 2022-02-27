@@ -7,7 +7,7 @@ namespace MyFileSystem.Wpf
     {
         protected override void OnExit(ExitEventArgs e)
         {
-            ServiceContainer.Dispose();
+            DependencyContainer.Dispose();
 
             base.OnExit(e);
         }

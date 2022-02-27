@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.Win32;
 using MyFileSystem.Model;
 using MyFileSystem.Wpf.Controls;
+using MyFileSystem.Wpf.Infrastructure;
 using MyFileSystem.Wpf.Model;
 using MyFileSystem.Wpf.Mvvm;
 
@@ -11,12 +12,18 @@ namespace MyFileSystem.Wpf.ViewModel
     public class FileSystemViewModel : NotificationObject
     {
         private readonly IFileSystem _fileSystem;
-        private readonly IFileSystemItemSelectorManager _fileSystemItemSelectorManager;
-        private readonly IWindowsManager _windowsManager;
-        private readonly IMessageBox _messageBox;
         private readonly FileSystemItemViewModel _rootItem;
         private FileSystemItemViewModel _selectedFileSystemItem;
         private string _newItemName;
+
+        [Inject]
+        public IFileSystemItemSelectorManager FileSystemItemSelectorManager { get; set; }
+
+        [Inject]
+        public IWindowsManager WindowsManager { get; set; }
+
+        [Inject]
+        public IMessageBox MessageBox { get; set; }
 
         public IEnumerable<FileSystemItemViewModel> Root => new[] { _rootItem };
 
@@ -27,7 +34,7 @@ namespace MyFileSystem.Wpf.ViewModel
             {
                 OffRenameMode();
                 _selectedFileSystemItem = value;
-                _fileSystemItemSelectorManager.SelectedItem = _selectedFileSystemItem.InnerObject;
+                FileSystemItemSelectorManager.SelectedItem = _selectedFileSystemItem.InnerObject;
                 OpenDirectoryOrFileCommand.UpdateCanExecute();
                 AddFilesCommand.UpdateCanExecute();
                 CreateDirectoryCommand.UpdateCanExecute();
@@ -55,16 +62,9 @@ namespace MyFileSystem.Wpf.ViewModel
         public ActionCommand MoveToDirectoryCommand { get; private set; }
         public ActionCommand DeleteItemCommand { get; private set; }
 
-        public FileSystemViewModel(
-            IFileSystem fileSystem,
-            IFileSystemItemSelectorManager fileSystemItemSelectorManager,
-            IWindowsManager windowsManager,
-            IMessageBox messageBox)
+        public FileSystemViewModel(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
-            _fileSystemItemSelectorManager = fileSystemItemSelectorManager;
-            _windowsManager = windowsManager;
-            _messageBox = messageBox;
             _rootItem = new FileSystemItemViewModel(_fileSystem.Root) { IsExpanded = true };
             InitCommands();
             OffRenameMode();
@@ -124,7 +124,7 @@ namespace MyFileSystem.Wpf.ViewModel
 
         private void MoveToDirectory()
         {
-            var vm = _windowsManager.ShowDialog<SelectDirectoryViewModel>();
+            var vm = WindowsManager.ShowDialog<SelectDirectoryViewModel>();
             if (vm.IsOK)
             {
                 var itemToMove = SelectedFileSystemItem.InnerObject;
@@ -135,7 +135,7 @@ namespace MyFileSystem.Wpf.ViewModel
 
         private void DeleteItem()
         {
-            var result = _messageBox.Show(
+            var result = MessageBox.Show(
                 "Точно удаляем?" + new string(' ', 20),
                 "My File System",
                 System.Windows.MessageBoxButton.YesNo,

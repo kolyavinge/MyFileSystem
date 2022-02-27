@@ -11,7 +11,7 @@ namespace MyFileSystem.Wpf.View
         public SelectDirectoryView()
         {
             InitializeComponent();
-            DataContext = ServiceContainer.GetService<SelectDirectoryViewModel>();
+            DataContext = DependencyContainer.Resolve<SelectDirectoryViewModel>();
         }
     }
 }

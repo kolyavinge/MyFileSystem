@@ -1,19 +1,14 @@
-﻿using MyFileSystem.Wpf.Mvvm;
+﻿using MyFileSystem.Wpf.Infrastructure;
+using MyFileSystem.Wpf.Mvvm;
 
 namespace MyFileSystem.Wpf.ViewModel
 {
     public class MainViewModel : NotificationObject
     {
-        public FileSystemViewModel FileSystemViewModel { get; }
+        [Inject]
+        public FileSystemViewModel FileSystemViewModel { get; set; }
 
-        public ImageFileViewModel ImageFileViewModel { get; }
-
-        public MainViewModel(
-            FileSystemViewModel fileSystemViewModel,
-            ImageFileViewModel imageFileViewModel)
-        {
-            FileSystemViewModel = fileSystemViewModel;
-            ImageFileViewModel = imageFileViewModel;
-        }
+        [Inject]
+        public ImageFileViewModel ImageFileViewModel { get; set; }
     }
 }

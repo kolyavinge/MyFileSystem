@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SingleFileStorage", "..\Sin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyFileSystem.Wpf", "MyFileSystem.Wpf\MyFileSystem.Wpf.csproj", "{DF3C3975-138C-4B9E-A9F2-94A8D09CBC6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileGenerator", "FileGenerator\FileGenerator.csproj", "{08B7DBB6-ED6E-464A-9841-0263F638F4FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileGenerator", "FileGenerator\FileGenerator.csproj", "{08B7DBB6-ED6E-464A-9841-0263F638F4FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{C77B79B9-5CE7-46BB-B1EB-4AE4232EA48B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp.csproj", "{C77B79B9-5CE7-46BB-B1EB-4AE4232EA48B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection", "..\DependencyInjection\DependencyInjection\DependencyInjection.csproj", "{E3A317DA-3542-4EC4-9B4A-889B550E5426}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{C77B79B9-5CE7-46BB-B1EB-4AE4232EA48B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C77B79B9-5CE7-46BB-B1EB-4AE4232EA48B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C77B79B9-5CE7-46BB-B1EB-4AE4232EA48B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3A317DA-3542-4EC4-9B4A-889B550E5426}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A317DA-3542-4EC4-9B4A-889B550E5426}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A317DA-3542-4EC4-9B4A-889B550E5426}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3A317DA-3542-4EC4-9B4A-889B550E5426}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F62DBB6F-CBA4-4EC8-957E-D86A49629AF0} = {B4717496-769F-496B-BC86-8D51ECD69112}
 		{224C3119-430A-42E3-95F8-D3F8012816BC} = {B4717496-769F-496B-BC86-8D51ECD69112}
+		{E3A317DA-3542-4EC4-9B4A-889B550E5426} = {B4717496-769F-496B-BC86-8D51ECD69112}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C75DD36-287A-4D1B-A60B-013175D1324F}

@@ -9,7 +9,7 @@ namespace MyFileSystem.Wpf.View
         public FileSystemView()
         {
             InitializeComponent();
-            DataContext = ServiceContainer.GetService<FileSystemViewModel>();
+            DataContext = DependencyContainer.Resolve<FileSystemViewModel>();
         }
     }
 }
