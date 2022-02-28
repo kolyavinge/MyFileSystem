@@ -4,12 +4,12 @@ using System.IO;
 
 namespace MyFileSystem.Data
 {
-    public interface ITempFileManager
+    internal interface ITempFileManager
     {
         string GetTempFilePath(string fileName);
     }
 
-    public class TempFileManager : ITempFileManager, IDisposable
+    internal class TempFileManager : ITempFileManager, IDisposable
     {
         private readonly string _tempDirectoryPath;
         private readonly List<string> _tempFiles;

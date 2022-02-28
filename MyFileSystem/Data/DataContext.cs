@@ -5,14 +5,14 @@ using SimpleDB;
 
 namespace MyFileSystem.Data
 {
-    public interface IDataContext
+    internal interface IDataContext
     {
         IFileSystemRepository FileSystemRepository { get; }
 
         IDataFileRepository DataFileRepository { get; }
     }
 
-    public class DataContext : IDataContext
+    internal class DataContext : IDataContext
     {
         private readonly IDBEngine _engine;
 

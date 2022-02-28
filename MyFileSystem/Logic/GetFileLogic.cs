@@ -3,12 +3,12 @@ using MyFileSystem.Data.Repository;
 
 namespace MyFileSystem.Logic
 {
-    public interface IGetFileLogic
+    internal interface IGetFileLogic
     {
         void GetFileContent(uint fileId, Stream output);
     }
 
-    public class GetFileLogic : IGetFileLogic
+    internal class GetFileLogic : IGetFileLogic
     {
         private readonly IFileSystemRepository _fileSystemRepository;
         private readonly IDataFileRepository _dataFileRepository;

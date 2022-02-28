@@ -6,12 +6,12 @@ using MyFileSystem.Data.Repository;
 
 namespace MyFileSystem.Logic
 {
-    public interface IAddFilesLogic
+    internal interface IAddFilesLogic
     {
         AddFilesResult AddFiles(uint parentDirectoryId, IEnumerable<string> filePathes);
     }
 
-    public class AddFilesLogic : IAddFilesLogic
+    internal class AddFilesLogic : IAddFilesLogic
     {
         private readonly IFileSystemRepository _fileSystemRepository;
         private readonly IDataFileRepository _dataFileRepository;

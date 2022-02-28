@@ -6,12 +6,12 @@ using MyFileSystem.Utils;
 
 namespace MyFileSystem.Logic
 {
-    public interface IDeleteFileSystemItemLogic
+    internal interface IDeleteFileSystemItemLogic
     {
         void DeleteItems(IEnumerable<FileSystemItem> itemsToDelete);
     }
 
-    public class DeleteFileSystemItemLogic : IDeleteFileSystemItemLogic
+    internal class DeleteFileSystemItemLogic : IDeleteFileSystemItemLogic
     {
         private readonly IFileSystemRepository _fileSystemRepository;
         private readonly IDataFileRepository _dataFileRepository;

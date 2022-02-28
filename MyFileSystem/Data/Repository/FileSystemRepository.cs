@@ -5,7 +5,7 @@ using SimpleDB;
 
 namespace MyFileSystem.Data.Repository
 {
-    public interface IFileSystemRepository
+    internal interface IFileSystemRepository
     {
         FileSystemItemPoco GetById(uint id);
         IEnumerable<FileSystemItemPoco> GetChildren(uint parentId);

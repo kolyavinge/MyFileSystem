@@ -5,7 +5,7 @@ using SingleFileStorage;
 
 namespace MyFileSystem.Data.Repository
 {
-    public interface IDataFileRepository
+    internal interface IDataFileRepository
     {
         void CreateDataFileIfNotExist(ushort dataFileNumber);
         void OpenDataFile(ushort dataFileNumber);

@@ -20,7 +20,7 @@ namespace MyFileSystem.Model
         byte[] GetFileContent(FileSystemItem file);
     }
 
-    public class FileSystem : IFileSystem
+    internal class FileSystem : IFileSystem
     {
         private readonly IFileSystemRepository _fileSystemRepository;
         private readonly IDataFileRepository _dataFileRepository;

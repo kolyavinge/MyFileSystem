@@ -7,12 +7,12 @@ using MyFileSystem.Data.Repository;
 
 namespace MyFileSystem.Logic
 {
-    public interface ICreateDirectoryLogic
+    internal interface ICreateDirectoryLogic
     {
         FileSystemItemPoco CreateDirectory(uint parentDirectoryId, IReadOnlyCollection<string> childrenNames);
     }
 
-    public class CreateDirectoryLogic : ICreateDirectoryLogic
+    internal class CreateDirectoryLogic : ICreateDirectoryLogic
     {
         private readonly IFileSystemRepository _fileSystemRepository;
 

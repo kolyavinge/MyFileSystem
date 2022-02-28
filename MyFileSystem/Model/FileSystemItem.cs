@@ -103,7 +103,7 @@ namespace MyFileSystem.Model
             return Children.Union(Children.SelectMany(x => x.Children));
         }
 
-        public FileSystemItem(
+        internal FileSystemItem(
             IFileSystemRepository fileSystemRepository,
             uint id,
             FileSystemItemKind kind,
