@@ -70,9 +70,9 @@ namespace MyFileSystem.Data.Repository
 
         public void Rename(uint itemId, string newName)
         {
-            var item = _engine.GetCollection<FileSystemItemPoco>().Get(itemId);
-            item.Name = newName;
-            _engine.GetCollection<FileSystemItemPoco>().Update(item);
+            _engine.GetCollection<FileSystemItemPoco>()
+                .Query()
+                .Update(x => new FileSystemItemPoco { Name = newName }, x => x.Id == itemId);
         }
 
         public void DeleteFileSystemItems(IEnumerable<uint> idList)
