@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using MyFileSystem.Infrastructure;
 
@@ -7,12 +6,13 @@ namespace MyFileSystem.Wpf.Infrastructure
 {
     public static class DependencyContainer
     {
-        private static readonly DependencyInjection.DependencyContainer _container;
+        private static readonly DependencyInjection.DependencyContainer _container = new();
 
         static DependencyContainer()
         {
-            _container = new DependencyInjection.DependencyContainer();
-            InitContainer();
+            var appDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            var dataDirectoryPath = Path.Combine(appDirectory, "data");
+            _container.InitFromModules(new CoreInjectModule(dataDirectoryPath), new WpfInjectModule());
         }
 
         public static TDependency Resolve<TDependency>()
@@ -24,15 +24,5 @@ namespace MyFileSystem.Wpf.Infrastructure
         {
             _container.Dispose();
         }
-
-        private static void InitContainer()
-        {
-            var appDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-            var dataDirectoryPath = Path.Combine(appDirectory, "data");
-            _container.InitFromModules(new CoreInjectModule(dataDirectoryPath), new WpfInjectModule());
-        }
     }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public class InjectAttribute : DependencyInjection.InjectAttribute { }
 }

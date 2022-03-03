@@ -111,7 +111,7 @@ namespace MyFileSystem.Model
             FileSystemItem parent,
             ushort dataFileNumber)
         {
-            _fileSystemRepository = fileSystemRepository;
+            _fileSystemRepository = fileSystemRepository ?? throw new NullReferenceException();
             Id = id;
             Kind = kind;
             Name = name;

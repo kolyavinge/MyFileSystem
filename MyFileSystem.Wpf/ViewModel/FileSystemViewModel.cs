@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Win32;
+using MyFileSystem.Infrastructure;
 using MyFileSystem.Model;
 using MyFileSystem.Wpf.Controls;
-using MyFileSystem.Wpf.Infrastructure;
 using MyFileSystem.Wpf.Model;
 using MyFileSystem.Wpf.Mvvm;
 
