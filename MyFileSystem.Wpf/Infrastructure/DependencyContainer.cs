@@ -7,12 +7,19 @@ namespace MyFileSystem.Wpf.Infrastructure
 {
     public static class DependencyContainer
     {
-        private static readonly DependencyInjection.DependencyContainer _container;
+        private static readonly DependencyInjection.IDependencyContainer _container;
 
         static DependencyContainer()
         {
-            _container = new DependencyInjection.DependencyContainer();
+            _container = DependencyInjection.DependencyContainerFactory.MakeLiteContainer();
             InitContainer();
+        }
+
+        private static void InitContainer()
+        {
+            var appDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            var dataDirectoryPath = Path.Combine(appDirectory!, "data");
+            _container.InitFromModules(new CoreInjectModule(dataDirectoryPath), new WpfInjectModule());
         }
 
         public static TDependency Resolve<TDependency>()
@@ -23,13 +30,6 @@ namespace MyFileSystem.Wpf.Infrastructure
         public static void Dispose()
         {
             _container.Dispose();
-        }
-
-        private static void InitContainer()
-        {
-            var appDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-            var dataDirectoryPath = Path.Combine(appDirectory, "data");
-            _container.InitFromModules(new CoreInjectModule(dataDirectoryPath), new WpfInjectModule());
         }
     }
 
