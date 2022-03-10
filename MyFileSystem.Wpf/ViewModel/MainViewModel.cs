@@ -1,4 +1,4 @@
-﻿using MyFileSystem.Wpf.Infrastructure;
+﻿using MyFileSystem.Infrastructure;
 using MyFileSystem.Wpf.Mvvm;
 
 namespace MyFileSystem.Wpf.ViewModel

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using MyFileSystem.Data;
 using MyFileSystem.Data.Repository;
+using MyFileSystem.Infrastructure;
 using MyFileSystem.Logic;
 
 namespace MyFileSystem.Model
@@ -22,40 +23,29 @@ namespace MyFileSystem.Model
 
     internal class FileSystem : IFileSystem
     {
-        private readonly IFileSystemRepository _fileSystemRepository;
-        private readonly IDataFileRepository _dataFileRepository;
-        private readonly ITempFileManager _tempFileManager;
-        private readonly IGetFileLogic _getFileLogic;
-        private readonly IAddFilesLogic _addFilesLogic;
-        private readonly ICreateDirectoryLogic _createDirectoryLogic;
-        private readonly IDeleteFileSystemItemLogic _deleteFileSystemItemLogic;
+        [Inject]
+        public IFileSystemRepository FileSystemRepository { get; set; }
+        [Inject]
+        public IDataFileRepository DataFileRepository { get; set; }
+        [Inject]
+        public ITempFileManager TempFileManager { get; set; }
+        [Inject]
+        public IGetFileLogic GetFileLogic { get; set; }
+        [Inject]
+        public IAddFilesLogic AddFilesLogic { get; set; }
+        [Inject]
+        public ICreateDirectoryLogic CreateDirectoryLogic { get; set; }
+        [Inject]
+        public IDeleteFileSystemItemLogic DeleteFileSystemItemLogic { get; set; }
 
-        public FileSystemItem Root { get; }
-
-        public FileSystem(
-            IFileSystemRepository fileSystemRepository,
-            IDataFileRepository dataFileRepository,
-            ITempFileManager tempFileManager,
-            IGetFileLogic getFileLogic,
-            IAddFilesLogic addFilesLogic,
-            ICreateDirectoryLogic createDirectoryLogic,
-            IDeleteFileSystemItemLogic deleteFileSystemItemLogic)
-        {
-            _fileSystemRepository = fileSystemRepository;
-            _dataFileRepository = dataFileRepository;
-            _tempFileManager = tempFileManager;
-            _getFileLogic = getFileLogic;
-            _addFilesLogic = addFilesLogic;
-            _createDirectoryLogic = createDirectoryLogic;
-            _deleteFileSystemItemLogic = deleteFileSystemItemLogic;
-            Root = new FileSystemItem(_fileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка", null, 0);
-        }
+        private FileSystemItem _root;
+        public FileSystemItem Root => _root ??= new FileSystemItem(FileSystemRepository, 0, FileSystemItemKind.Directory, "Корневая папка", null, 0);
 
         public void OpenFile(FileSystemItem file)
         {
-            var tmpFilePath = _tempFileManager.GetTempFilePath(file.Name);
+            var tmpFilePath = TempFileManager.GetTempFilePath(file.Name);
             using var tmpFileStream = File.OpenWrite(tmpFilePath);
-            _getFileLogic.GetFileContent(file.Id, tmpFileStream);
+            GetFileLogic.GetFileContent(file.Id, tmpFileStream);
             using var fileOpener = new Process();
             fileOpener.StartInfo.FileName = "explorer";
             fileOpener.StartInfo.Arguments = "\"" + tmpFilePath + "\"";
@@ -64,20 +54,20 @@ namespace MyFileSystem.Model
 
         public void AddFiles(FileSystemItem parent, IEnumerable<string> filePathes)
         {
-            var result = _addFilesLogic.AddFiles(parent.Id, filePathes);
-            parent.AddChildren(result.FileSystemItems.Select(poco => FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, poco, parent)));
+            var result = AddFilesLogic.AddFiles(parent.Id, filePathes);
+            parent.AddChildren(result.FileSystemItems.Select(poco => FileSystemItemConverter.ToFileSystemItem(FileSystemRepository, poco, parent)));
         }
 
         public void Rename(FileSystemItem item, string newName)
         {
-            _fileSystemRepository.Rename(item.Id, newName);
+            FileSystemRepository.Rename(item.Id, newName);
             item.Name = newName;
         }
 
         public FileSystemItem CreateDirectory(FileSystemItem parentDirectory)
         {
-            var newDirectoryPoco = _createDirectoryLogic.CreateDirectory(parentDirectory.Id, parentDirectory.Children.Select(x => x.Name).ToList());
-            var newDirectory = FileSystemItemConverter.ToFileSystemItem(_fileSystemRepository, newDirectoryPoco, parentDirectory);
+            var newDirectoryPoco = CreateDirectoryLogic.CreateDirectory(parentDirectory.Id, parentDirectory.Children.Select(x => x.Name).ToList());
+            var newDirectory = FileSystemItemConverter.ToFileSystemItem(FileSystemRepository, newDirectoryPoco, parentDirectory);
             parentDirectory.AddChildren(new[] { newDirectory });
 
             return newDirectory;
@@ -85,28 +75,28 @@ namespace MyFileSystem.Model
 
         public void MoveTo(FileSystemItem itemToMove, FileSystemItem parentDirectory)
         {
-            var poco = _fileSystemRepository.GetById(itemToMove.Id);
+            var poco = FileSystemRepository.GetById(itemToMove.Id);
             poco.ParentId = parentDirectory.Id;
-            _fileSystemRepository.SaveFileSystemItems(new[] { poco });
+            FileSystemRepository.SaveFileSystemItems(new[] { poco });
             itemToMove.Parent.ChildrenMoveFrom(new[] { itemToMove });
             parentDirectory.ChildrenMoveTo(new[] { itemToMove });
         }
 
         public void DeleteItems(IEnumerable<FileSystemItem> itemsToDelete)
         {
-            _deleteFileSystemItemLogic.DeleteItems(itemsToDelete);
+            DeleteFileSystemItemLogic.DeleteItems(itemsToDelete);
         }
 
         public byte[] GetFileContent(FileSystemItem file)
         {
             byte[] result = null;
-            _dataFileRepository.OpenDataFile(file.DataFileNumber);
-            using (var recordStream = _dataFileRepository.OpenDataRecord(file.Id.ToString()))
+            DataFileRepository.OpenDataFile(file.DataFileNumber);
+            using (var recordStream = DataFileRepository.OpenDataRecord(file.Id.ToString()))
             {
                 result = new byte[recordStream.Length];
                 recordStream.Read(result, 0, result.Length);
             }
-            _dataFileRepository.CloseCurrentDataFile();
+            DataFileRepository.CloseCurrentDataFile();
 
             return result;
         }
