@@ -11,7 +11,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <controls:TreeViewExt ItemsSource="{Binding Root}" SelectedItemBindable="{Binding SelectedFileSystemItem, Mode=TwoWay}">
+        <controls:TreeViewExt ItemsSource="{Binding Root}" SelectedItemBindable="{Binding SelectedFileSystemItem, Mode=TwoWay}" BorderThickness="0">
             <!--Resources-->
             <controls:TreeViewExt.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#cce8ff" />

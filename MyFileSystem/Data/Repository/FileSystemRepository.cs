@@ -9,9 +9,9 @@ namespace MyFileSystem.Data.Repository
     {
         FileSystemItemPoco GetById(uint id);
         IEnumerable<FileSystemItemPoco> GetChildren(uint parentId);
-        void SaveFileSystemItems(IEnumerable<FileSystemItemPoco> fileSystemItems);
+        void SaveFileSystemItems(IReadOnlyCollection<FileSystemItemPoco> fileSystemItems);
         IEnumerable<DataFilePoco> GetDataFiles();
-        void SaveDataFiles(IEnumerable<DataFilePoco> dataFiles);
+        void SaveDataFiles(IReadOnlyCollection<DataFilePoco> dataFiles);
         LastItemIdPoco GetLastItemId();
         void SaveLastItemId(LastItemIdPoco item);
         void Rename(uint itemId, string newName);
@@ -33,7 +33,7 @@ namespace MyFileSystem.Data.Repository
 
         public FileSystemItemPoco GetById(uint id)
         {
-            return _engine.GetCollection<FileSystemItemPoco>().Get(id);
+            return _engine.GetCollection<FileSystemItemPoco>().GetOrDefault(id);
         }
 
         public IEnumerable<FileSystemItemPoco> GetChildren(uint parentId)
@@ -43,7 +43,7 @@ namespace MyFileSystem.Data.Repository
                 .ToList();
         }
 
-        public void SaveFileSystemItems(IEnumerable<FileSystemItemPoco> fileSystemItems)
+        public void SaveFileSystemItems(IReadOnlyCollection<FileSystemItemPoco> fileSystemItems)
         {
             _engine.GetCollection<FileSystemItemPoco>().InsertOrUpdate(fileSystemItems);
         }
@@ -53,7 +53,7 @@ namespace MyFileSystem.Data.Repository
             return _engine.GetCollection<DataFilePoco>().GetAll();
         }
 
-        public void SaveDataFiles(IEnumerable<DataFilePoco> dataFiles)
+        public void SaveDataFiles(IReadOnlyCollection<DataFilePoco> dataFiles)
         {
             _engine.GetCollection<DataFilePoco>().InsertOrUpdate(dataFiles);
         }

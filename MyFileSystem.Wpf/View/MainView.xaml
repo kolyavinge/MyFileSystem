@@ -20,8 +20,8 @@
                 <ColumnDefinition MinWidth="200" Width="250" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <view:FileSystemView Grid.Column="0" DataContext="{Binding FileSystemViewModel}" />
-            <GridSplitter Grid.Column="0" Width="6" />
+            <view:FileSystemView Grid.Column="0" DataContext="{Binding FileSystemViewModel}" Margin="0,0,6,0" />
+            <GridSplitter Grid.Column="0" ResizeDirection="Columns" Width="6" />
             <Grid Grid.Column="1">
                 <view:ImageFileView DataContext="{Binding ImageFileViewModel}" Visibility="{Binding IsActive, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
             </Grid>
