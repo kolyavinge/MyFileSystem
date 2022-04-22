@@ -77,7 +77,7 @@ namespace MyFileSystem.Data.Repository
 
         public void DeleteFileSystemItems(IEnumerable<uint> idList)
         {
-            _engine.GetCollection<FileSystemItemPoco>().Delete(idList.Cast<object>());
+            _engine.GetCollection<FileSystemItemPoco>().Delete(idList.Cast<object>().ToList());
         }
     }
 }
